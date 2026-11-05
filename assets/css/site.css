@@ -1630,6 +1630,17 @@ html.no-js .animate-on-scroll {
     bottom: 14px;
     left: 14px;
   }
+  /* Boutons en grille régulière sur téléphone */
+  .btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .btn {
+    width: 100%;
+    padding: 0 12px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 390px) {
@@ -1650,6 +1661,7 @@ html.no-js .animate-on-scroll {
   }
   .btn-group {
     flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .btn {
     width: 100%;
