@@ -251,18 +251,11 @@ a:hover {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease-out;
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .panel {
-    background: color-mix(in srgb, var(--surface) 82%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .panel {
-    background: var(--surface);
-  }
+/* Translucide sans flou : backdrop-filter sur de grands panneaux au-dessus d'un fond animé faisait ramer le défilement */
+.panel {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  transform: none;
+  transform-style: flat;
 }
 
 .panel:hover {
@@ -270,23 +263,6 @@ a:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Lueur de bordure suivant la souris */
-.panel::before,
-.stat-tile::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(180px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--accent) 15%, transparent), transparent 70%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.panel:hover::before,
-.stat-tile:hover::before {
-  opacity: 1;
-}
 
 .panel-title {
   margin: 0 0 16px 0;
@@ -532,18 +508,8 @@ h1 {
   transition: border-color 0.2s ease, transform 0.15s ease-out, box-shadow 0.2s ease;
 }
 
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .stat-tile {
-    background: color-mix(in srgb, var(--surface) 82%, transparent);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .stat-tile {
-    background: var(--surface);
-  }
+.stat-tile {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
 }
 
 .stat-tile:hover {

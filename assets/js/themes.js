@@ -175,6 +175,8 @@
   var erreursSignalees = {};
 
   // Suivi de la souris et du défilement pour la parallaxe
+  // Pendant le défilement, le fond n'est pas redessiné (le navigateur garde sa puissance pour la page)
+  var dernierDefilementMs = 0;
   var sourisX = 0;
   var sourisY = 0;
   var defilementY = 0;
@@ -187,6 +189,7 @@
 
     window.addEventListener('scroll', function () {
       defilementY = window.scrollY || window.pageYOffset || 0;
+      dernierDefilementMs = Date.now();
     }, { passive: true });
   }
 
@@ -371,7 +374,8 @@
     obtenirCanvas();
     if (!canvasFond || !ctxFond || typeof window === 'undefined') return;
 
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Fond décoratif : résolution 1x, quatre fois moins de pixels à redessiner sur écran haute densité
+    dpr = 1;
     largeurVue = window.innerWidth;
     hauteurVue = window.innerHeight;
 
@@ -1036,7 +1040,7 @@
 
     var delta = timestamp - dernierTempsMs;
     // 25 i/s au plus : intervalle théorique de 40 ms (tolérance à 38 ms)
-    if (delta >= 38) {
+    if (delta >= 38 && Date.now() - dernierDefilementMs > 150) {
       dernierTempsMs = timestamp;
       tempsSec += delta / 1000;
       dessinerImage(tempsSec, false);
