@@ -52,6 +52,25 @@
     'noel': { bg: '#0A170E', surface: '#13261A', accent: '#FF4D4D', accentEnd: '#FFD700', text: '#F5FAF6' }
   };
 
+  var THEMES_ANIMES = {
+    'sombre': true,
+    'clair': true,
+    'tons-de-gris': true,
+    'acrylique': true,
+    'carbone': true,
+    'papier': true,
+    'bretagne': true,
+    'console-de-poche': true,
+    'neon-arcade': true,
+    'terminal-retro': true,
+    'aurore': true,
+    'synthwave': true,
+    'volcan': true,
+    'abysses': true,
+    'halloween': true,
+    'noel': true
+  };
+
   var CLE_STOCKAGE = 'portfolio-theme';
   var CLE_STOCKAGE_ANIM = 'portfolio-animations';
   var themeActif = 'sombre';
@@ -161,10 +180,14 @@
   }
 
   // ------------------------------------------------------------------------
-  // 4. Moteur de rendu Canvas du fond animé
+  // 4. Moteur de rendu et Web Worker OffscreenCanvas
   // ------------------------------------------------------------------------
   var canvasFond = null;
   var ctxFond = null;
+  var workerFond = null;
+  var modeWorker = false;
+  var rAFParallaxe = null;
+
   var animationId = null;
   var dernierTempsMs = 0;
   var tempsSec = 0;
@@ -174,22 +197,38 @@
   var estAnime = false;
   var erreursSignalees = {};
 
-  // Suivi de la souris et du défilement pour la parallaxe
-  // Pendant le défilement, le fond n'est pas redessiné (le navigateur garde sa puissance pour la page)
-  var dernierDefilementMs = 0;
+  // Suivi de la position de la souris et du défilement pour la parallaxe
   var sourisX = 0;
   var sourisY = 0;
   var defilementY = 0;
+
+  function planifierParallaxeWorker() {
+    if (!modeWorker || !workerFond) return;
+    if (rAFParallaxe === null && typeof window !== 'undefined' && window.requestAnimationFrame) {
+      rAFParallaxe = window.requestAnimationFrame(function () {
+        rAFParallaxe = null;
+        if (workerFond) {
+          workerFond.postMessage({
+            type: 'parallaxe',
+            sourisX: sourisX,
+            sourisY: sourisY,
+            defilementY: defilementY
+          });
+        }
+      });
+    }
+  }
 
   if (typeof window !== 'undefined') {
     window.addEventListener('mousemove', function (e) {
       sourisX = e.clientX;
       sourisY = e.clientY;
+      planifierParallaxeWorker();
     }, { passive: true });
 
     window.addEventListener('scroll', function () {
       defilementY = window.scrollY || window.pageYOffset || 0;
-      dernierDefilementMs = Date.now();
+      planifierParallaxeWorker();
     }, { passive: true });
   }
 
@@ -227,28 +266,108 @@
       canvasFond.setAttribute('aria-hidden', 'true');
       document.body.insertBefore(canvasFond, document.body.firstChild);
     }
-
-    if (canvasFond && !ctxFond && canvasFond.getContext) {
-      try {
-        ctxFond = canvasFond.getContext('2d');
-      } catch (err) {
-        ctxFond = null;
-      }
-    }
     return canvasFond;
   }
 
+  function initialiserMoteurFond() {
+    obtenirCanvas();
+    if (!canvasFond || typeof window === 'undefined') return;
+
+    largeurVue = window.innerWidth;
+    hauteurVue = window.innerHeight;
+    canvasFond.style.width = largeurVue + 'px';
+    canvasFond.style.height = hauteurVue + 'px';
+
+    // Détection du support OffscreenCanvas et Web Worker
+    var supporteWorker = (
+      typeof window.Worker === 'function' &&
+      typeof HTMLCanvasElement !== 'undefined' &&
+      typeof HTMLCanvasElement.prototype.transferControlToOffscreen === 'function' &&
+      typeof window.OffscreenCanvas === 'function'
+    );
+
+    if (supporteWorker) {
+      try {
+        workerFond = new Worker('assets/js/fond-worker.js');
+        workerFond.onerror = function (evt) {
+          console.error('Erreur retournée par le Web Worker assets/js/fond-worker.js :', evt.message || evt);
+        };
+
+        var offscreen = canvasFond.transferControlToOffscreen();
+        modeWorker = true;
+
+        workerFond.postMessage({
+          type: 'init',
+          canvas: offscreen,
+          largeur: largeurVue,
+          hauteur: hauteurVue,
+          dpr: 1,
+          theme: themeActif,
+          palette: PALETTES[themeActif] || PALETTES['sombre'],
+          animationsAutorisees: animationsAutorisees,
+          reducedMotion: aReducedMotion(),
+          visible: (typeof document !== 'undefined') ? !document.hidden : true
+        }, [offscreen]);
+
+        return;
+      } catch (err) {
+        console.warn('Initialisation du Web Worker OffscreenCanvas impossible, passage en repli fil principal :', err);
+        workerFond = null;
+        modeWorker = false;
+      }
+    }
+
+    // Mode repli sur le fil principal (navigateur sans OffscreenCanvas ou échec)
+    initialiserRepliFilPrincipal();
+  }
+
+  function initialiserRepliFilPrincipal() {
+    if (!canvasFond) return;
+    if (!ctxFond && canvasFond.getContext) {
+      try {
+        ctxFond = canvasFond.getContext('2d');
+      } catch (err) {
+        console.error('Impossible d\'obtenir le contexte 2D pour le repli fil principal :', err);
+        ctxFond = null;
+        return;
+      }
+    }
+    redimensionnerCanvasRepli();
+  }
+
+  function redimensionnerCanvas() {
+    if (typeof window === 'undefined') return;
+    largeurVue = window.innerWidth;
+    hauteurVue = window.innerHeight;
+
+    if (canvasFond) {
+      canvasFond.style.width = largeurVue + 'px';
+      canvasFond.style.height = hauteurVue + 'px';
+    }
+
+    if (modeWorker && workerFond) {
+      workerFond.postMessage({
+        type: 'redimensionner',
+        largeur: largeurVue,
+        hauteur: hauteurVue
+      });
+    } else if (!modeWorker) {
+      redimensionnerCanvasRepli();
+    }
+  }
+
   // ------------------------------------------------------------------------
-  // 4.1 Réseau supervisé (nœuds, liens, impulsions et parallaxe)
+  // 4.1 Réseau supervisé (nœuds, liens, impulsions et parallaxe) — REPLI
   // ------------------------------------------------------------------------
   var noeudsReseau = [];
   var impulsionsReseau = [];
   var tempsProchaineImpulsion = 2.0;
   var canvasMotifsHorsEcran = {};
+  var motifPapierCache = null;
+  var motifGranitCache = null;
 
   function reinitialiserNoeuds(w, h) {
     var surface = w * h;
-    // 40 à 70 nœuds selon la surface de l'écran
     var cible = Math.min(70, Math.max(40, Math.floor(surface / 22000)));
     noeudsReseau = [];
     for (var i = 0; i < cible; i++) {
@@ -264,6 +383,28 @@
     tempsProchaineImpulsion = tempsSec + 2.0 + Math.random() * 2.0;
   }
 
+  function ajusterPopulationNoeuds(w, h) {
+    if (w <= 0 || h <= 0) return;
+    if (noeudsReseau.length === 0) {
+      reinitialiserNoeuds(w, h);
+    } else {
+      var surface = w * h;
+      var cible = Math.min(70, Math.max(40, Math.floor(surface / 22000)));
+      while (noeudsReseau.length < cible) {
+        noeudsReseau.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          r: 1.6 + Math.random() * 0.8
+        });
+      }
+      if (noeudsReseau.length > cible) {
+        noeudsReseau.length = cible;
+      }
+    }
+  }
+
   function dessinerReseauSupervise(ctx, w, h, t) {
     if (!noeudsReseau || noeudsReseau.length === 0) {
       reinitialiserNoeuds(w, h);
@@ -274,7 +415,6 @@
     var seuilDist = 140;
     var seuilDistSq = seuilDist * seuilDist;
 
-    // Déplacement lent des nœuds avec rebond doux sur les bords
     for (var i = 0; i < noeudsReseau.length; i++) {
       var n = noeudsReseau[i];
       n.x += n.vx;
@@ -286,7 +426,6 @@
       else if (n.y > h) { n.y = h; n.vy = -Math.abs(n.vy); }
     }
 
-    // Liens entre nœuds à moins de 140 px (opacité max 0.12)
     ctx.lineWidth = 1;
     var liensActifs = [];
 
@@ -311,7 +450,6 @@
       }
     }
 
-    // Nœuds (opacité 0.35)
     ctx.fillStyle = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ', 0.35)';
     for (var k = 0; k < noeudsReseau.length; k++) {
       var nd = noeudsReseau[k];
@@ -320,7 +458,6 @@
       ctx.fill();
     }
 
-    // Déclenchement d'une impulsion lumineuse toutes les 2 à 4 s (paquet réseau)
     if (t >= tempsProchaineImpulsion && liensActifs.length > 0) {
       tempsProchaineImpulsion = t + 2.0 + Math.random() * 2.0;
       var lienChoisi = liensActifs[Math.floor(Math.random() * liensActifs.length)];
@@ -332,7 +469,6 @@
       });
     }
 
-    // Dessin et progression des impulsions
     for (var m = impulsionsReseau.length - 1; m >= 0; m--) {
       var imp = impulsionsReseau[m];
       var p = (t - imp.debut) / imp.duree;
@@ -350,31 +486,38 @@
     }
   }
 
+  function creerCanvasHorsEcranRepli(w, h) {
+    if (typeof document !== 'undefined' && document.createElement) {
+      var c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      return c;
+    }
+    return null;
+  }
+
   function obtenirMotifHorsEcran(id, dessinateurOriginal, w, h) {
     var cle = id + '_' + w + 'x' + h;
     if (canvasMotifsHorsEcran[cle]) {
       return canvasMotifsHorsEcran[cle];
     }
-    if (typeof document === 'undefined') return null;
     try {
-      var off = document.createElement('canvas');
-      off.width = w;
-      off.height = h;
+      var off = creerCanvasHorsEcranRepli(w, h);
+      if (!off) return null;
       var offCtx = off.getContext('2d');
       dessinateurOriginal(offCtx, w, h, 0);
       canvasMotifsHorsEcran[cle] = off;
       return off;
     } catch (err) {
-      console.warn('Erreur lors du pré-rendu hors écran pour le motif « ' + id + ' » :', err);
+      console.warn('Erreur lors du pré-rendu hors écran pour le motif « ' + id + ' » sur le fil principal :', err);
       return null;
     }
   }
 
-  function redimensionnerCanvas() {
+  function redimensionnerCanvasRepli() {
     obtenirCanvas();
     if (!canvasFond || !ctxFond || typeof window === 'undefined') return;
 
-    // Fond décoratif : résolution 1x, quatre fois moins de pixels à redessiner sur écran haute densité
     dpr = 1;
     largeurVue = window.innerWidth;
     hauteurVue = window.innerHeight;
@@ -387,50 +530,24 @@
     ctxFond.setTransform(1, 0, 0, 1, 0, 0);
     ctxFond.scale(dpr, dpr);
 
-    // Ajustement de la population de nœuds
-    if (largeurVue > 0 && hauteurVue > 0) {
-      if (noeudsReseau.length === 0) {
-        reinitialiserNoeuds(largeurVue, hauteurVue);
-      } else {
-        var surface = largeurVue * hauteurVue;
-        var cible = Math.min(70, Math.max(40, Math.floor(surface / 22000)));
-        while (noeudsReseau.length < cible) {
-          noeudsReseau.push({
-            x: Math.random() * largeurVue,
-            y: Math.random() * hauteurVue,
-            vx: (Math.random() - 0.5) * 0.4,
-            vy: (Math.random() - 0.5) * 0.4,
-            r: 1.6 + Math.random() * 0.8
-          });
-        }
-        if (noeudsReseau.length > cible) {
-          noeudsReseau.length = cible;
-        }
-      }
-    }
-
-    // Réinitialisation du cache des motifs lors d'un redimensionnement
+    ajusterPopulationNoeuds(largeurVue, hauteurVue);
     canvasMotifsHorsEcran = {};
 
-    dessinerImage(tempsSec, true);
+    dessinerImageRepli(tempsSec, true);
   }
 
   // ------------------------------------------------------------------------
-  // 5. Algorithmes de dessin des fonds (fidèles à l'étude Superviseur JER)
+  // 5. Algorithmes de dessin des fonds — REPLI SUR LE FIL PRINCIPAL
   // ------------------------------------------------------------------------
-
-  // 5.1 Fond statique uniforme (utilisé aussi comme repli de sécurité)
   function dessinerStatiqueUni(ctx, w, h, couleur) {
     ctx.fillStyle = couleur || '#14171B';
     ctx.fillRect(0, 0, w, h);
   }
 
-  // 5.2 Aurore boréale : dégradé glissant + 4 voiles verticaux ondulants
   function dessinerAurore(ctx, w, h, t) {
     ctx.fillStyle = '#0B1220';
     ctx.fillRect(0, 0, w, h);
 
-    // Dégradé diagonal glissant verticalement sur 20 s (-40 px à +40 px)
     var dy = Math.sin(2 * Math.PI * t / 20.0) * 40;
     var grad = ctx.createLinearGradient(0, dy, w, h + dy);
     grad.addColorStop(0, 'rgba(94, 234, 212, 0.16)');
@@ -438,7 +555,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // 4 voiles verticaux ondulants
     var voiles = [
       { r: 94, g: 234, b: 212, pX: 11.0, wBase: 90 },
       { r: 167, g: 139, b: 250, pX: 13.0, wBase: 105 },
@@ -466,7 +582,6 @@
     }
   }
 
-  // 5.3 Néon arcade : quadrillage rétro + pulsation dégradé 4 s
   function dessinerGrilleNeon(ctx, w, h, t) {
     ctx.fillStyle = '#0D0A14';
     ctx.fillRect(0, 0, w, h);
@@ -479,7 +594,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // Quadrillage fin
     ctx.strokeStyle = 'rgba(255, 61, 170, ' + (0.05 * pulse) + ')';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -494,7 +608,6 @@
     }
     ctx.stroke();
 
-    // Halo d'accent central
     var rMax = Math.max(w, h) * 0.55;
     var halo = ctx.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, rMax);
     halo.addColorStop(0, 'rgba(255, 61, 170, ' + (0.07 * pulse) + ')');
@@ -503,24 +616,20 @@
     ctx.fillRect(0, 0, w, h);
   }
 
-  // 5.4 Terminal rétro : écran cathodique (trame 3 px, phosphore 6,5 s, scintillement)
   function dessinerCRT(ctx, w, h, t) {
     ctx.fillStyle = '#030803';
     ctx.fillRect(0, 0, w, h);
 
-    // Scintillement à cycle 4,7 s
     var tCycle = t % 4.7;
     var scintillement = 1.0;
     if (tCycle >= 2.95 && tCycle <= 3.0) scintillement = 0.5;
     else if (tCycle >= 3.43 && tCycle <= 3.47) scintillement = 0.7;
 
-    // Trame horizontale CRT (1 px vert pâle, 2 px vides)
     ctx.fillStyle = 'rgba(57, 255, 20, ' + (0.09 * scintillement) + ')';
     for (var y = 0; y < h; y += 3) {
       ctx.fillRect(0, y, w, 1);
     }
 
-    // Bande de phosphore descendante de 150 px en 6,5 s
     var yBande = ((t % 6.5) / 6.5) * (h + 150) - 150;
     var gPhosphore = ctx.createLinearGradient(0, yBande, 0, yBande + 150);
     gPhosphore.addColorStop(0, 'rgba(57, 255, 20, 0)');
@@ -530,7 +639,6 @@
     ctx.fillStyle = gPhosphore;
     ctx.fillRect(0, yBande, w, 150);
 
-    // Ligne parasite aléatoire tremblante (cycle 7,3 s)
     var tPar = t % 7.3;
     if ((tPar >= 1.6 && tPar <= 1.78) || (tPar >= 4.9 && tPar <= 4.98)) {
       var yPar = (tPar < 3 ? 0.32 : 0.74) * h;
@@ -540,7 +648,6 @@
     }
   }
 
-  // 5.5 Tissage carbone 4×4 px statique
   function dessinerCarbone(ctx, w, h) {
     ctx.fillStyle = '#111214';
     ctx.fillRect(0, 0, w, h);
@@ -554,8 +661,6 @@
     }
   }
 
-  // 5.6 Grain papier parchemin (dégradé + tuile de bruit fixe 96×96)
-  var motifPapierCache = null;
   function dessinerPapier(ctx, w, h) {
     ctx.fillStyle = '#F4EEE2';
     ctx.fillRect(0, 0, w, h);
@@ -568,26 +673,27 @@
 
     if (!motifPapierCache && typeof document !== 'undefined') {
       try {
-        var off = document.createElement('canvas');
-        off.width = 96;
-        off.height = 96;
-        var offCtx = off.getContext('2d');
-        var imgData = offCtx.createImageData(96, 96);
-        var seed = 1729; // Graine officielle de l'étude
-        for (var i = 0; i < 96 * 96; i++) {
-          seed = (seed * 1664525 + 1013904223) >>> 0;
-          if ((seed % 100) > 48) {
-            var val = (seed >>> 8) % 32;
-            var idx = i * 4;
-            imgData.data[idx] = 31;
-            imgData.data[idx + 1] = 42;
-            imgData.data[idx + 2] = 68;
-            imgData.data[idx + 3] = val;
+        var off = creerCanvasHorsEcranRepli(96, 96);
+        if (off) {
+          var offCtx = off.getContext('2d');
+          var imgData = offCtx.createImageData(96, 96);
+          var seed = 1729;
+          for (var i = 0; i < 96 * 96; i++) {
+            seed = (seed * 1664525 + 1013904223) >>> 0;
+            if ((seed % 100) > 48) {
+              var val = (seed >>> 8) % 32;
+              var idx = i * 4;
+              imgData.data[idx] = 31;
+              imgData.data[idx + 1] = 42;
+              imgData.data[idx + 2] = 68;
+              imgData.data[idx + 3] = val;
+            }
           }
+          offCtx.putImageData(imgData, 0, 0);
+          motifPapierCache = ctx.createPattern(off, 'repeat');
         }
-        offCtx.putImageData(imgData, 0, 0);
-        motifPapierCache = ctx.createPattern(off, 'repeat');
       } catch (err) {
+        console.warn('Erreur lors de la création du motif papier sur le fil principal :', err);
         motifPapierCache = null;
       }
     }
@@ -598,8 +704,6 @@
     }
   }
 
-  // 5.7 Granit ardoise statique (dégradé + grain subtil)
-  var motifGranitCache = null;
   function dessinerGranit(ctx, w, h) {
     ctx.fillStyle = '#15171C';
     ctx.fillRect(0, 0, w, h);
@@ -612,31 +716,32 @@
 
     if (!motifGranitCache && typeof document !== 'undefined') {
       try {
-        var off = document.createElement('canvas');
-        off.width = 96;
-        off.height = 96;
-        var offCtx = off.getContext('2d');
-        var imgData = offCtx.createImageData(96, 96);
-        var seed = 2026;
-        for (var i = 0; i < 96 * 96; i++) {
-          seed = (seed * 1664525 + 1013904223) >>> 0;
-          var mod = seed % 100;
-          var idx = i * 4;
-          if (mod < 25) {
-            imgData.data[idx] = 255;
-            imgData.data[idx + 1] = 255;
-            imgData.data[idx + 2] = 255;
-            imgData.data[idx + 3] = 12;
-          } else if (mod > 75) {
-            imgData.data[idx] = 0;
-            imgData.data[idx + 1] = 0;
-            imgData.data[idx + 2] = 0;
-            imgData.data[idx + 3] = 15;
+        var off = creerCanvasHorsEcranRepli(96, 96);
+        if (off) {
+          var offCtx = off.getContext('2d');
+          var imgData = offCtx.createImageData(96, 96);
+          var seed = 2026;
+          for (var i = 0; i < 96 * 96; i++) {
+            seed = (seed * 1664525 + 1013904223) >>> 0;
+            var mod = seed % 100;
+            var idx = i * 4;
+            if (mod < 25) {
+              imgData.data[idx] = 255;
+              imgData.data[idx + 1] = 255;
+              imgData.data[idx + 2] = 255;
+              imgData.data[idx + 3] = 12;
+            } else if (mod > 75) {
+              imgData.data[idx] = 0;
+              imgData.data[idx + 1] = 0;
+              imgData.data[idx + 2] = 0;
+              imgData.data[idx + 3] = 15;
+            }
           }
+          offCtx.putImageData(imgData, 0, 0);
+          motifGranitCache = ctx.createPattern(off, 'repeat');
         }
-        offCtx.putImageData(imgData, 0, 0);
-        motifGranitCache = ctx.createPattern(off, 'repeat');
       } catch (err) {
+        console.warn('Erreur lors de la création du motif granit sur le fil principal :', err);
         motifGranitCache = null;
       }
     }
@@ -647,7 +752,6 @@
     }
   }
 
-  // 5.8 Lignes tramées LCD statiques
   function dessinerLCD(ctx, w, h) {
     ctx.fillStyle = '#C4CFA1';
     ctx.fillRect(0, 0, w, h);
@@ -664,7 +768,6 @@
     }
   }
 
-  // 5.9 Lave incandescente : pulsation magmatique + braises montantes
   function dessinerLave(ctx, w, h, t) {
     ctx.fillStyle = '#140C0A';
     ctx.fillRect(0, 0, w, h);
@@ -676,7 +779,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // Braises montantes (16 braises régulières)
     for (var i = 0; i < 16; i++) {
       var taille = 2.0 + (i % 3);
       var duree = 4.2 + (i % 4) * 0.9;
@@ -694,7 +796,6 @@
     }
   }
 
-  // 5.10 Abysses : dégradé marin abyssal + méduses bioluminescentes et bulles
   function dessinerAbysses(ctx, w, h, t) {
     ctx.fillStyle = '#050E1A';
     ctx.fillRect(0, 0, w, h);
@@ -705,7 +806,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // 4 méduses bioluminescentes
     for (var i = 0; i < 4; i++) {
       var cycle = 15 + i * 2;
       var prog = ((t + i * 3.1) % cycle) / cycle;
@@ -720,7 +820,6 @@
       ctx.strokeStyle = 'rgba(34, 229, 208, ' + alpha + ')';
       ctx.lineWidth = 1.2;
 
-      // Ombrelle cloche
       ctx.beginPath();
       ctx.moveTo(-11, 0);
       ctx.bezierCurveTo(-11, -13, 11, -13, 11, 0);
@@ -729,7 +828,6 @@
       ctx.fill();
       ctx.stroke();
 
-      // Tentacules
       ctx.lineWidth = 0.8;
       for (var tk = -6; tk <= 6; tk += 4) {
         ctx.beginPath();
@@ -742,7 +840,6 @@
       ctx.restore();
     }
 
-    // Bulles ascendantes
     for (var b = 0; b < 10; b++) {
       var bDuree = 9.5 + (b % 4) * 2;
       var bProg = ((t + b * 1.4) % bDuree) / bDuree;
@@ -761,7 +858,6 @@
     }
   }
 
-  // 5.11 Scène Halloween : lune avec halo, chauves-souris, citrouilles vacillantes
   function dessinerHalloween(ctx, w, h, t) {
     ctx.fillStyle = '#120D1A';
     ctx.fillRect(0, 0, w, h);
@@ -772,7 +868,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // Lune et halo pulsant (cycle 4 s)
     var lx = Math.max(80, w - 90);
     var ly = 75;
     var pulseHalo = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(2 * Math.PI * t / 4.0));
@@ -789,7 +884,6 @@
     ctx.arc(lx, ly, 23, 0, Math.PI * 2);
     ctx.fill();
 
-    // 4 chauves-souris traversantes
     for (var cs = 0; cs < 4; cs++) {
       var csDuree = 8 + cs * 1.5;
       var csProg = ((t + cs * 2.3) % csDuree) / csDuree;
@@ -813,7 +907,6 @@
       ctx.restore();
     }
 
-    // 3 citrouilles au sol avec bougie vacillante
     var solY = h - 25;
     for (var cp = 0; cp < 3; cp++) {
       var cpx = (w / 4) * (cp + 1);
@@ -833,7 +926,6 @@
       ctx.ellipse(cpx, solY, cpTaille, cpTaille * 0.75, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Yeux et sourire taillés
       ctx.fillStyle = '#120D1A';
       ctx.beginPath();
       ctx.moveTo(cpx - 6, solY - 3);
@@ -853,7 +945,6 @@
     }
   }
 
-  // 5.12 Neige : 18 flocons tombant verticalement (algorithme officiel C#)
   function dessinerNeige(ctx, w, h, t) {
     ctx.fillStyle = '#0A170E';
     ctx.fillRect(0, 0, w, h);
@@ -882,7 +973,6 @@
     }
   }
 
-  // 5.13 Acrylique : bandeau supérieur verre translucide statique
   function dessinerAcrylique(ctx, w, h) {
     ctx.fillStyle = '#1E2433';
     ctx.fillRect(0, 0, w, h);
@@ -897,7 +987,6 @@
     ctx.fillRect(0, 47, w, 1);
   }
 
-  // 5.14 Synthwave : dégradé coucher de soleil glissant sur 20 s
   function dessinerSynthwave(ctx, w, h, t) {
     ctx.fillStyle = '#140B24';
     ctx.fillRect(0, 0, w, h);
@@ -909,7 +998,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
-    // Voile néon horizontal
     var pulse = 0.5 + 0.5 * Math.sin(t * 0.6);
     var gLigne = ctx.createLinearGradient(0, h * 0.45, w, h * 0.45);
     gLigne.addColorStop(0, 'rgba(255, 113, 206, 0)');
@@ -919,9 +1007,6 @@
     ctx.fillRect(0, h * 0.35, w, h * 0.3);
   }
 
-  // Table de routage des dessinateurs par identifiant de thème
-  // Les thèmes statiques et motifs reçoivent l'animation discrète « réseau supervisé »
-  // Contraste élevé : fond noir uni sans animation (accessibilité)
   var DESSINATEURS = {
     'sombre': function (ctx, w, h, t) {
       dessinerStatiqueUni(ctx, w, h, PALETTES['sombre'].bg);
@@ -978,31 +1063,10 @@
     'noel': dessinerNeige
   };
 
-  // Liste des thèmes dont le fond est animé en continu (tous sauf contraste-eleve)
-  var THEMES_ANIMES = {
-    'sombre': true,
-    'clair': true,
-    'tons-de-gris': true,
-    'acrylique': true,
-    'carbone': true,
-    'papier': true,
-    'bretagne': true,
-    'console-de-poche': true,
-    'neon-arcade': true,
-    'terminal-retro': true,
-    'aurore': true,
-    'synthwave': true,
-    'volcan': true,
-    'abysses': true,
-    'halloween': true,
-    'noel': true
-  };
-
   // ------------------------------------------------------------------------
-  // 6. Boucle d'animation (plafonnée à 25 i/s au plus via requestAnimationFrame)
+  // 6. Boucle d'animation — REPLI SUR LE FIL PRINCIPAL (20 i/s au plus)
   // ------------------------------------------------------------------------
-  function dessinerImage(t, forcerImageUnique) {
-    obtenirCanvas();
+  function dessinerImageRepli(t, forcerImageUnique) {
     if (!ctxFond || largeurVue <= 0 || hauteurVue <= 0) return;
 
     var paralX = 0;
@@ -1023,15 +1087,15 @@
     } catch (err) {
       if (!erreursSignalees[themeActif]) {
         erreursSignalees[themeActif] = true;
-        console.warn('Erreur lors du dessin du fond pour le thème « ' + themeActif + ' » :', err);
+        console.warn('Erreur lors du dessin du fond pour le thème « ' + themeActif + ' » sur le fil principal :', err);
       }
       var pal = PALETTES[themeActif] || PALETTES['sombre'];
       dessinerStatiqueUni(ctxFond, largeurVue, hauteurVue, pal.bg);
-      arreterBoucle();
+      arreterBoucleRepli();
     }
   }
 
-  function boucleAnimation(timestamp) {
+  function boucleAnimationRepli(timestamp) {
     animationId = null;
 
     if (!estAnime || (typeof document !== 'undefined' && document.hidden) || aReducedMotion() || !animationsAutorisees) {
@@ -1039,34 +1103,35 @@
     }
 
     var delta = timestamp - dernierTempsMs;
-    // 25 i/s au plus : intervalle théorique de 40 ms (tolérance à 38 ms)
-    if (delta >= 38 && Date.now() - dernierDefilementMs > 300) {
+    // Repli sur le fil principal à 20 i/s au plus (intervalle de 50 ms, tolérance à 48 ms)
+    // Le fond continue à tourner pendant le défilement sans pause
+    if (delta >= 48) {
       dernierTempsMs = timestamp;
       tempsSec += delta / 1000;
-      dessinerImage(tempsSec, false);
+      dessinerImageRepli(tempsSec, false);
     }
 
     if (estAnime) {
-      animationId = requestAnimationFrame(boucleAnimation);
+      animationId = requestAnimationFrame(boucleAnimationRepli);
     }
   }
 
-  function demarrerBoucle() {
-    arreterBoucle();
+  function demarrerBoucleRepli() {
+    arreterBoucleRepli();
 
     if (aReducedMotion() || !animationsAutorisees || !THEMES_ANIMES[themeActif]) {
       estAnime = false;
-      dessinerImage(0, true);
+      dessinerImageRepli(0, true);
       return;
     }
 
     estAnime = true;
-    dernierTempsMs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
-    dessinerImage(tempsSec, true);
-    animationId = requestAnimationFrame(boucleAnimation);
+    dernierTempsMs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    dessinerImageRepli(tempsSec, true);
+    animationId = requestAnimationFrame(boucleAnimationRepli);
   }
 
-  function arreterBoucle() {
+  function arreterBoucleRepli() {
     if (animationId) {
       cancelAnimationFrame(animationId);
       animationId = null;
@@ -1077,6 +1142,30 @@
   // ------------------------------------------------------------------------
   // 7. Contrôle du panneau de configuration d'affichage et sélecteurs DOM
   // ------------------------------------------------------------------------
+  function changerEtatAnimations(val) {
+    animationsAutorisees = !!val;
+    enregistrerAnimations(animationsAutorisees);
+
+    var animToggle = (typeof document !== 'undefined') ? document.getElementById('theme-anim-toggle') : null;
+    if (animToggle && animToggle.checked !== animationsAutorisees) {
+      animToggle.checked = animationsAutorisees;
+    }
+
+    if (modeWorker && workerFond) {
+      workerFond.postMessage({
+        type: 'animations',
+        autorisees: animationsAutorisees
+      });
+    } else {
+      if (animationsAutorisees) {
+        demarrerBoucleRepli();
+      } else {
+        arreterBoucleRepli();
+        dessinerImageRepli(0, true);
+      }
+    }
+  }
+
   function initialiserPanneauThemes() {
     if (typeof document === 'undefined') return;
 
@@ -1087,14 +1176,7 @@
     if (animToggle) {
       animToggle.checked = animationsAutorisees;
       animToggle.addEventListener('change', function () {
-        animationsAutorisees = animToggle.checked;
-        enregistrerAnimations(animationsAutorisees);
-        if (animationsAutorisees) {
-          demarrerBoucle();
-        } else {
-          arreterBoucle();
-          dessinerImage(0, true);
-        }
+        changerEtatAnimations(animToggle.checked);
       });
     }
 
@@ -1102,7 +1184,6 @@
 
     function ouvrirPopover() {
       popover.hidden = false;
-      // Forcer le reflow pour que l'animation CSS soit jouée proprement
       void popover.offsetWidth;
       popover.classList.add('is-open');
       toggleBtn.setAttribute('aria-expanded', 'true');
@@ -1131,7 +1212,6 @@
       }
     });
 
-    // Fermeture par Échap (uniquement quand le panneau est ouvert)
     window.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && popover.classList.contains('is-open')) {
         e.preventDefault();
@@ -1139,7 +1219,6 @@
       }
     });
 
-    // Fermeture par clic à l'extérieur
     document.addEventListener('click', function (e) {
       if (!popover.classList.contains('is-open')) return;
       if (!popover.contains(e.target) && !toggleBtn.contains(e.target)) {
@@ -1154,7 +1233,6 @@
     var pickers = document.querySelectorAll('[data-theme-picker]');
     for (var p = 0; p < pickers.length; p++) {
       var picker = pickers[p];
-      // Si le conteneur n'est pas encore rempli, on l'initialise
       if (picker.children.length === 0) {
         for (var i = 0; i < THEMES.length; i++) {
           (function (th) {
@@ -1176,7 +1254,6 @@
           })(THEMES[i]);
         }
       } else {
-        // Mise à jour de l'état aria-pressed sur les boutons existants
         var boutons = picker.querySelectorAll('button[data-target-theme]');
         for (var b = 0; b < boutons.length; b++) {
           var btnExistant = boutons[b];
@@ -1186,7 +1263,6 @@
       }
     }
 
-    // Mise à jour des libellés affichant le nom du thème actif
     var nameLabels = document.querySelectorAll('[data-theme-name]');
     var themeObjet = THEMES[0];
     for (var k = 0; k < THEMES.length; k++) {
@@ -1225,8 +1301,17 @@
 
     actualiserCurseursCSS(id);
     actualiserSelecteurs();
-    redimensionnerCanvas();
-    demarrerBoucle();
+
+    if (modeWorker && workerFond) {
+      workerFond.postMessage({
+        type: 'theme',
+        theme: id,
+        palette: PALETTES[id] || PALETTES['sombre']
+      });
+    } else {
+      redimensionnerCanvasRepli();
+      demarrerBoucleRepli();
+    }
   }
 
   // ------------------------------------------------------------------------
@@ -1249,10 +1334,12 @@
   }
 
   function surChargementDOM() {
-    redimensionnerCanvas();
+    initialiserMoteurFond();
     actualiserSelecteurs();
     initialiserPanneauThemes();
-    demarrerBoucle();
+    if (!modeWorker) {
+      demarrerBoucleRepli();
+    }
   }
 
   if (typeof document !== 'undefined') {
@@ -1264,12 +1351,19 @@
 
     // Mise en pause / reprise lors des changements d'onglet
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden) {
-        arreterBoucle();
+      if (modeWorker && workerFond) {
+        workerFond.postMessage({
+          type: 'visibilite',
+          visible: !document.hidden
+        });
       } else {
-        if (THEMES_ANIMES[themeActif] && !aReducedMotion() && animationsAutorisees) {
-          dernierTempsMs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
-          demarrerBoucle();
+        if (document.hidden) {
+          arreterBoucleRepli();
+        } else {
+          if (THEMES_ANIMES[themeActif] && !aReducedMotion() && animationsAutorisees) {
+            dernierTempsMs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+            demarrerBoucleRepli();
+          }
         }
       }
     });
@@ -1281,11 +1375,18 @@
     // Écoute des changements de réglage système prefers-reduced-motion
     if (mediaReducedMotion) {
       var gererChangementMotion = function () {
-        if (aReducedMotion()) {
-          arreterBoucle();
-          dessinerImage(0, true);
+        if (modeWorker && workerFond) {
+          workerFond.postMessage({
+            type: 'reduced-motion',
+            active: aReducedMotion()
+          });
         } else {
-          demarrerBoucle();
+          if (aReducedMotion()) {
+            arreterBoucleRepli();
+            dessinerImageRepli(0, true);
+          } else {
+            demarrerBoucleRepli();
+          }
         }
       };
 
@@ -1308,16 +1409,7 @@
         return animationsAutorisees;
       },
       definirAnimations: function (val) {
-        animationsAutorisees = !!val;
-        enregistrerAnimations(animationsAutorisees);
-        var animToggle = document.getElementById('theme-anim-toggle');
-        if (animToggle) animToggle.checked = animationsAutorisees;
-        if (animationsAutorisees) {
-          demarrerBoucle();
-        } else {
-          arreterBoucle();
-          dessinerImage(0, true);
-        }
+        changerEtatAnimations(val);
       }
     };
   }
