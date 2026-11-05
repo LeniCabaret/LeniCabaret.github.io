@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="LC">
+  <defs>
+    <linearGradient id="tile" x1="20" y1="18" x2="104" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8f66ff"/>
+      <stop offset="1" stop-color="#5f35c7"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="38" fill="url(#tile)"/>
+  <path d="M10 10c15-15 42-17 64-10c-14-1-33 3-48 17c-15 15-20 34-16 52c-7-22-4-42 0-59z" fill="#ffffff" opacity="0.12"/>
+  <text
+    x="64"
+    y="79"
+    text-anchor="middle"
+    font-family="Segoe UI, Arial, sans-serif"
+    font-size="56"
+    font-weight="700"
+    fill="#f7f3ff"
+    letter-spacing="0.5"
+  >LC</text>
+</svg>
