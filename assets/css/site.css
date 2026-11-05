@@ -320,42 +320,18 @@ a:hover {
 }
 
 @keyframes pulse-green {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px var(--success);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.15);
-    box-shadow: 0 0 16px var(--success), 0 0 4px #ffffff;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 @keyframes pulse-amber {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px var(--warning);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.15);
-    box-shadow: 0 0 16px var(--warning), 0 0 4px #ffffff;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 @keyframes pulse-blue {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px var(--accent);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.15);
-    box-shadow: 0 0 16px var(--accent), 0 0 4px #ffffff;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 /* ==========================================================================
@@ -1513,20 +1489,10 @@ dialog.image-viewer::backdrop {
 }
 
 @keyframes radar-sweep {
-  0% {
-    top: 0%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.32;
-  }
-  85% {
-    opacity: 0.32;
-  }
-  100% {
-    top: 100%;
-    opacity: 0;
-  }
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 0.32; }
+  85% { opacity: 0.32; }
+  100% { transform: translateY(var(--radar-h, 400px)); opacity: 0; }
 }
 
 /* Bouton flottant Retour en haut */

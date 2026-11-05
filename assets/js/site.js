@@ -399,6 +399,8 @@
           line.setAttribute('aria-hidden', 'true');
           target.appendChild(line);
         }
+        // La ligne descend par transform (pas de recalcul de mise en page) : hauteur à parcourir
+        target.style.setProperty('--radar-h', target.offsetHeight + 'px');
       });
     } catch (err) {
       console.error('Erreur lors de l\'initialisation du balayage radar :', err);

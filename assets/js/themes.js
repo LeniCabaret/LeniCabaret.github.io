@@ -1040,7 +1040,7 @@
 
     var delta = timestamp - dernierTempsMs;
     // 25 i/s au plus : intervalle théorique de 40 ms (tolérance à 38 ms)
-    if (delta >= 38 && Date.now() - dernierDefilementMs > 150) {
+    if (delta >= 38 && Date.now() - dernierDefilementMs > 300) {
       dernierTempsMs = timestamp;
       tempsSec += delta / 1000;
       dessinerImage(tempsSec, false);
