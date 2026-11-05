@@ -6,10 +6,13 @@ Usage : python3 tools/build.py
 - Copie src/*.html à la racine de dist/ et assets/ (sauf captures.json)
 - Injecte la clé publique Web3Forms
 - Vérifie l'absence de numéros de téléphone (règle stricte)
-- Vérifie l'existence de toutes les ressources relatives référencées (src/href)
+- Vérifie l'existence de toutes les ressources référencées (relatives ou absolues /assets/...)
+- Génère dist/robots.txt (tout autorisé + ligne Sitemap)
+- Génère dist/sitemap.xml (les 3 pages principales avec lastmod = date du build, sans la 404)
 - Crée dist/.nojekyll pour GitHub Pages
 """
 
+import datetime
 import os
 import re
 import shutil
@@ -91,7 +94,8 @@ def main():
         sys.exit(f"ERREUR : Numéro de téléphone détecté dans les pages générées :\n" + "\n".join(phone_errors))
     print("✓ Vérification de confidentialité : aucun numéro de téléphone détecté.")
 
-    # 7. Vérification que chaque fichier référencé par src="..." ou href="..." relatif existe dans dist/
+    # 7. Vérification que chaque fichier référencé par src="..." ou href="..." existe dans dist/
+    # Accepte les chemins relatifs ainsi que les chemins absolus (/assets/... ou /index.html) typiques de la 404
     ref_regex = re.compile(r'(?:src|href)=["\']([^"\']+)["\']', re.IGNORECASE)
     missing_files = []
     checked_refs = 0
@@ -106,27 +110,69 @@ def main():
             if ref.startswith(('http://', 'https://', 'mailto:', 'tel:', 'javascript:', 'data:')):
                 continue
 
-            # Nettoyer query strings et ancres dans les chemins relatifs
+            # Nettoyer query strings et ancres dans les chemins
             clean_ref = urllib.parse.unquote(ref.split('#')[0].split('?')[0])
             if not clean_ref:
                 continue
 
-            target_file = (html_file.parent / clean_ref).resolve()
+            if clean_ref.startswith('/'):
+                # Chemin absolu racine du site (ex. /assets/... ou /e5.html)
+                clean_path = clean_ref.lstrip('/')
+                if not clean_path:
+                    target_file = (DIST_DIR / 'index.html').resolve()
+                else:
+                    target_file = (DIST_DIR / clean_path).resolve()
+            else:
+                target_file = (html_file.parent / clean_ref).resolve()
+
+            if target_file.is_dir() and (target_file / 'index.html').exists():
+                target_file = target_file / 'index.html'
+
             checked_refs += 1
             if not target_file.exists():
                 missing_files.append(f"Dans {html_file.name} : '{ref}' introuvable -> {target_file}")
 
     if missing_files:
-        sys.exit(f"ERREUR : Fichiers référencés relatifs manquants dans dist/ :\n" + "\n".join(missing_files))
-    print(f"✓ Intégrité des liens : {checked_refs} référence(s) relative(s) vérifiée(s), 0 manquante.")
+        sys.exit(f"ERREUR : Fichiers référencés relatifs ou absolus manquants dans dist/ :\n" + "\n".join(missing_files))
+    print(f"✓ Intégrité des liens : {checked_refs} référence(s) vérifiée(s), 0 manquante.")
 
-    # 8. Création de dist/.nojekyll
+    # 8. Génération de dist/robots.txt (tout autorisé + ligne Sitemap)
+    robots_content = (
+        "User-agent: *\n"
+        "Allow: /\n\n"
+        "Sitemap: https://lenicabaret.github.io/sitemap.xml\n"
+    )
+    (DIST_DIR / 'robots.txt').write_text(robots_content, encoding='utf-8')
+    print("✓ Fichier dist/robots.txt généré.")
+
+    # 9. Génération de dist/sitemap.xml (les 3 pages principales, URL absolues, lastmod = date du build, pas de 404)
+    build_date = datetime.date.today().isoformat()
+    sitemap_pages = [
+        'https://lenicabaret.github.io/',
+        'https://lenicabaret.github.io/e5.html',
+        'https://lenicabaret.github.io/mini-si-albatros.html',
+    ]
+    sitemap_xml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for url in sitemap_pages:
+        sitemap_xml.append('  <url>')
+        sitemap_xml.append(f'    <loc>{url}</loc>')
+        sitemap_xml.append(f'    <lastmod>{build_date}</lastmod>')
+        sitemap_xml.append('  </url>')
+    sitemap_xml.append('</urlset>\n')
+    (DIST_DIR / 'sitemap.xml').write_text('\n'.join(sitemap_xml), encoding='utf-8')
+    print(f"✓ Fichier dist/sitemap.xml généré ({len(sitemap_pages)} pages, lastmod={build_date}).")
+
+    # 10. Création de dist/.nojekyll
     (DIST_DIR / '.nojekyll').write_text('', encoding='utf-8')
     print("✓ Fichier dist/.nojekyll généré.")
 
     print("\n=== Résumé du build ===")
     print(f"- Destination : {DIST_DIR}")
     print(f"- Pages : {len(html_src_files)}")
+    print("- SEO : robots.txt et sitemap.xml générés (hors 404)")
     print("- Statut : Succès complet, prêt pour GitHub Pages.")
 
 

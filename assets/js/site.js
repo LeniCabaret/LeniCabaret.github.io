@@ -447,63 +447,88 @@
   initBackToTop();
 
   // 12. IntersectionObserver : Apparition au défilement et animations
+  function triggerElementAnimations(target) {
+    // Déclenchement spécifique sur la tuile Uptime
+    if (target.contains(uptimeEl) && uptimeEl && uptimeEl.textContent === '0') {
+      animateValue(uptimeEl, 0, currentAge, 900);
+    }
+    // Déclenchement sur le Bénévolat
+    if (target.contains(benevolatEl) && benevolatEl && benevolatEl.textContent === '0') {
+      animateValue(benevolatEl, 0, benevolatYears, 800);
+    }
+    // Déclenchement sur le total E5
+    if (target.contains(e5El) && e5El && e5El.textContent === '0') {
+      const total = parseInt(e5El.getAttribute('data-count') || '22', 10);
+      animateValue(e5El, 0, total, 800);
+    }
+
+    // Déclenchement des barres d'histogramme
+    const bars = target.querySelectorAll('.hist-bar');
+    bars.forEach(bar => bar.classList.add('grown'));
+
+    // Déclenchement des barres de Gantt
+    const ganttBars = target.querySelectorAll('.gantt-bar');
+    ganttBars.forEach(gb => gb.classList.add('grown'));
+
+    // Déclenchement en cascade des cellules de la carte de chaleur E5
+    const heatmapCells = target.querySelectorAll('.heatmap-cell.active');
+    if (heatmapCells.length > 0 && !prefersReducedMotion) {
+      heatmapCells.forEach((cell, idx) => {
+        cell.style.opacity = '0';
+        cell.style.transform = 'scale(0.5)';
+        setTimeout(() => {
+          cell.style.opacity = '1';
+          cell.style.transform = 'scale(1)';
+        }, Math.min(idx * 25, 1200));
+      });
+    }
+  }
+
+  // Impression : afficher directement les valeurs finales des compteurs
+  window.addEventListener('beforeprint', () => {
+    if (uptimeEl) uptimeEl.textContent = String(currentAge);
+    if (benevolatEl) benevolatEl.textContent = String(benevolatYears);
+    if (e5El) e5El.textContent = e5El.getAttribute('data-count') || '22';
+  });
+
   if ('IntersectionObserver' in window) {
     try {
-      // Animation des panneaux
+      // Déclenchement anticipé : rootMargin positif de 25% en bas pour anticiper le défilement
       const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
-
-            // Déclenchement spécifique sur la tuile Uptime
-            if (entry.target.contains(uptimeEl) && uptimeEl && uptimeEl.textContent === '0') {
-              animateValue(uptimeEl, 0, currentAge, 900);
-            }
-            // Déclenchement sur le Bénévolat
-            if (entry.target.contains(benevolatEl) && benevolatEl && benevolatEl.textContent === '0') {
-              animateValue(benevolatEl, 0, benevolatYears, 800);
-            }
-            // Déclenchement sur le total E5
-            if (entry.target.contains(e5El) && e5El && e5El.textContent === '0') {
-              const total = parseInt(e5El.getAttribute('data-count') || '22', 10);
-              animateValue(e5El, 0, total, 800);
-            }
-
-            // Déclenchement des barres d'histogramme
-            const bars = entry.target.querySelectorAll('.hist-bar');
-            bars.forEach(bar => bar.classList.add('grown'));
-
-            // Déclenchement des barres de Gantt
-            const ganttBars = entry.target.querySelectorAll('.gantt-bar');
-            ganttBars.forEach(gb => gb.classList.add('grown'));
-
-            // Déclenchement en cascade des cellules de la carte de chaleur E5
-            const heatmapCells = entry.target.querySelectorAll('.heatmap-cell.active');
-            if (heatmapCells.length > 0 && !prefersReducedMotion) {
-              heatmapCells.forEach((cell, idx) => {
-                cell.style.opacity = '0';
-                cell.style.transform = 'scale(0.5)';
-                setTimeout(() => {
-                  cell.style.opacity = '1';
-                  cell.style.transform = 'scale(1)';
-                }, Math.min(idx * 25, 1200));
-              });
-            }
-
+            triggerElementAnimations(entry.target);
             obs.unobserve(entry.target);
           }
         });
       }, {
-        rootMargin: '0px 0px -40px 0px',
-        threshold: 0.1
+        rootMargin: '0px 0px 25% 0px',
+        threshold: 0
       });
 
+      const windowHeight = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 800;
+      const initialThreshold = windowHeight * 1.25;
+
       document.querySelectorAll('.animate-on-scroll, .panel, .stat-tile').forEach(el => {
-        el.classList.add('animate-on-scroll');
-        observer.observe(el);
+        const rect = el.getBoundingClientRect();
+        // Si l'élément est déjà dans ou près de l'écran au chargement : visible tout de suite
+        if (rect.top <= initialThreshold && rect.bottom >= 0) {
+          el.classList.add('is-visible');
+          triggerElementAnimations(el);
+        } else {
+          // Masquage progressif uniquement pour les éléments hors écran
+          el.classList.add('animate-on-scroll');
+          observer.observe(el);
+        }
       });
     } catch (err) {
       console.error('Erreur lors de la configuration de l\'IntersectionObserver :', err);
+      // Repli en cas d'erreur : afficher tous les éléments
+      document.querySelectorAll('.animate-on-scroll, .panel, .stat-tile').forEach(el => {
+        el.classList.add('is-visible');
+        triggerElementAnimations(el);
+      });
     }
   } else {
     // Repli pour navigateurs anciens ou sans IntersectionObserver

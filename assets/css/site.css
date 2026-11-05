@@ -319,6 +319,12 @@ a:hover {
   animation: pulse-blue 2.4s infinite ease-in-out;
 }
 
+.voyant-red {
+  background: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+  animation: pulse-red 2s infinite ease-in-out;
+}
+
 @keyframes pulse-green {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
@@ -330,6 +336,11 @@ a:hover {
 }
 
 @keyframes pulse-blue {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@keyframes pulse-red {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
 }
@@ -523,6 +534,8 @@ h1 {
 }
 
 .stat-number {
+  white-space: nowrap;
+  flex-shrink: 0;
   font-size: 40px;
   font-weight: 600;
   line-height: 1;
@@ -1454,12 +1467,18 @@ dialog.image-viewer::backdrop {
    Animations & Transitions (Respect prefers-reduced-motion)
    ========================================================================== */
 
+/* Repli sans JS ou en cas d'échec du script */
+html.no-js .animate-on-scroll {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* L'état initial n'est masqué QUE si JS est actif */
 .js .animate-on-scroll {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+  transform: translateY(8px);
+  transition: opacity 0.25s ease,
+              transform 0.25s ease,
               border-color 0.2s ease,
               box-shadow 0.2s ease;
 }
@@ -1656,5 +1675,136 @@ dialog.image-viewer::backdrop {
     flex: none;
     width: auto;
     white-space: nowrap;
+  }
+}
+
+/* ==========================================================================
+   Impression (@media print)
+   ========================================================================== */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Masquer canvas de fond, barre de progression, bouton de thème, palette Ctrl+K, console interactive, bouton retour en haut, formulaire de contact */
+  #fond-theme,
+  canvas,
+  .stat-sparkline,
+  .fx-progression,
+  .theme-fab,
+  #theme-toggle-btn,
+  .theme-popover,
+  #theme-popover,
+  .fx-palette,
+  .fx-palette-bouton,
+  .fx-console,
+  #console,
+  .back-to-top,
+  #back-to-top,
+  .contact-form,
+  form[data-form],
+  .skip-link,
+  .fx-toast,
+  .fx-boot,
+  .btn-ripple,
+  .radar-scan-line,
+  .topbar,
+  .btn-group,
+  .projects-table th:last-child,
+  .projects-table td:last-child {
+    display: none !important;
+  }
+
+  /* Rendre visible tout le contenu animé */
+  .animate-on-scroll,
+  .js .animate-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Cartes et panneaux lisibles sur fond blanc sans coupure */
+  .panel,
+  .stat-tile,
+  .incident-card,
+  .spec-item,
+  .inventory-tag,
+  .veille-card,
+  article {
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    color: #000000 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Titres protégés des veuves */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Tableaux lisibles sans couper les lignes entre deux pages */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #cccccc !important;
+    padding: 6px 8px !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+    font-size: 10pt !important;
+  }
+
+  th {
+    background: #f2f2f2 !important;
+    font-weight: 700 !important;
+  }
+
+  .table-responsive,
+  .switch-table-wrapper {
+    overflow: visible !important;
+    border: none !important;
+  }
+
+  /* Affiche l'URL des liens externes après leur texte */
+  a[href^="http://"]::after,
+  a[href^="https://"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    font-weight: normal;
+    color: #333333 !important;
+    word-break: break-all;
+  }
+
+  a[href^="#"]::after {
+    content: "";
   }
 }
