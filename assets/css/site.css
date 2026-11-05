@@ -165,22 +165,11 @@ a:hover {
   gap: 8px;
 }
 
-.theme-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.theme-picker {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-[data-theme-name] {
+.ping-indicator {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--muted);
+  opacity: 0.85;
 }
 
 .topbar-nav {
@@ -203,12 +192,33 @@ a:hover {
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
   transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 .nav-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.nav-btn:hover::after,
+.nav-btn.active::after {
+  transform: scaleX(1);
 }
 
 .nav-btn.active {
@@ -236,13 +246,46 @@ a:hover {
   border-radius: 6px;
   padding: 18px;
   position: relative;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transform-style: preserve-3d;
+  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease-out;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .panel {
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .panel {
+    background: var(--surface);
+  }
 }
 
 .panel:hover {
   border-color: var(--accent);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transform: translateY(-2px);
+}
+
+/* Lueur de bordure suivant la souris */
+.panel::before,
+.stat-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(180px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--accent) 15%, transparent), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.panel:hover::before,
+.stat-tile:hover::before {
+  opacity: 1;
 }
 
 .panel-title {
@@ -291,11 +334,13 @@ a:hover {
 .voyant-amber {
   background: var(--warning);
   box-shadow: 0 0 8px var(--warning);
+  animation: pulse-amber 2.4s infinite ease-in-out;
 }
 
 .voyant-blue {
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
+  animation: pulse-blue 2.4s infinite ease-in-out;
 }
 
 @keyframes pulse-green {
@@ -305,9 +350,35 @@ a:hover {
     box-shadow: 0 0 8px var(--success);
   }
   50% {
-    opacity: 0.45;
-    transform: scale(0.9);
-    box-shadow: 0 0 2px var(--success);
+    opacity: 0.6;
+    transform: scale(1.15);
+    box-shadow: 0 0 16px var(--success), 0 0 4px #ffffff;
+  }
+}
+
+@keyframes pulse-amber {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px var(--warning);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+    box-shadow: 0 0 16px var(--warning), 0 0 4px #ffffff;
+  }
+}
+
+@keyframes pulse-blue {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 8px var(--accent);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+    box-shadow: 0 0 16px var(--accent), 0 0 4px #ffffff;
   }
 }
 
@@ -392,7 +463,25 @@ h1 {
   border: 1px solid transparent;
   text-decoration: none;
   font-family: inherit;
+  position: relative;
+  overflow: hidden;
   transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  transform: scale(0);
+  animation: btn-ripple-anim 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes btn-ripple-anim {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
 }
 
 .btn-primary {
@@ -437,13 +526,37 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: border-color 0.2s ease, transform 0.15s ease-out, box-shadow 0.2s ease;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .stat-tile {
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .stat-tile {
+    background: var(--surface);
+  }
 }
 
 .stat-tile:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.stat-sparkline {
+  width: 120px;
+  height: 28px;
+  flex: none;
+  display: block;
+  opacity: 0.9;
 }
 
 .stat-top {
@@ -746,6 +859,8 @@ h1 {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
 .heatmap-row {
@@ -887,6 +1002,8 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .gantt-header-years {
@@ -1415,6 +1532,74 @@ dialog.image-viewer::backdrop {
 .delay-3 { transition-delay: 0.15s; }
 .delay-4 { transition-delay: 0.2s; }
 
+/* Ligne de balayage radar (carte de chaleur E5 et Gantt) */
+.radar-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 5%, var(--accent) 50%, transparent 95%);
+  opacity: 0;
+  box-shadow: 0 0 8px var(--accent);
+  pointer-events: none;
+  z-index: 10;
+  animation: radar-sweep 6s infinite linear;
+}
+
+@keyframes radar-sweep {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.32;
+  }
+  85% {
+    opacity: 0.32;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Bouton flottant Retour en haut */
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 998;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
@@ -1429,6 +1614,18 @@ dialog.image-viewer::backdrop {
   }
   .gantt-bar,
   .stat-histogram .hist-bar {
+    transform: none !important;
+  }
+  .panel,
+  .stat-tile {
+    transform: none !important;
+  }
+  .radar-scan-line,
+  .btn-ripple {
+    display: none !important;
+  }
+  .back-to-top:hover,
+  .theme-fab:hover {
     transform: none !important;
   }
 }
@@ -1477,6 +1674,13 @@ dialog.image-viewer::backdrop {
   }
 }
 
+@media (max-width: 480px) {
+  .back-to-top {
+    bottom: 14px;
+    left: 14px;
+  }
+}
+
 @media (max-width: 390px) {
   body {
     font-size: 14px;
@@ -1506,12 +1710,9 @@ dialog.image-viewer::backdrop {
   .topbar {
     position: static;
   }
-  .live-status,
-  [data-theme-name] {
+  .live-status {
     display: none;
   }
-  .topbar .theme-controls,
-  .topbar .theme-picker,
   .topbar .topbar-nav {
     display: flex;
     flex-wrap: nowrap;
@@ -1519,7 +1720,6 @@ dialog.image-viewer::backdrop {
     max-width: 100%;
     scrollbar-width: none;
   }
-  .topbar .theme-picker > *,
   .topbar .topbar-nav .nav-btn {
     flex: none;
     width: auto;

@@ -53,7 +53,9 @@
   };
 
   var CLE_STOCKAGE = 'portfolio-theme';
+  var CLE_STOCKAGE_ANIM = 'portfolio-animations';
   var themeActif = 'sombre';
+  var animationsAutorisees = true;
 
   // ------------------------------------------------------------------------
   // 2. Gestion sécurisée du stockage local (toujours dans try/catch)
@@ -64,7 +66,7 @@
         return window.localStorage.getItem(CLE_STOCKAGE);
       }
     } catch (err) {
-      /* Accès refusé ou mode navigation privée stricte */
+      console.warn('Accès à localStorage impossible pour le thème :', err);
     }
     return null;
   }
@@ -75,9 +77,35 @@
         window.localStorage.setItem(CLE_STOCKAGE, id);
       }
     } catch (err) {
-      /* Stockage refusé : fonctionnement sans persistance */
+      console.warn('Impossible d\'enregistrer le thème dans localStorage :', err);
     }
   }
+
+  function lireAnimationsStockees() {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        var val = window.localStorage.getItem(CLE_STOCKAGE_ANIM);
+        if (val !== null) {
+          return val === 'true';
+        }
+      }
+    } catch (err) {
+      console.warn('Accès à localStorage impossible pour les animations :', err);
+    }
+    return true; // Activé par défaut
+  }
+
+  function enregistrerAnimations(val) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(CLE_STOCKAGE_ANIM, val ? 'true' : 'false');
+      }
+    } catch (err) {
+      console.warn('Impossible d\'enregistrer les animations dans localStorage :', err);
+    }
+  }
+
+  animationsAutorisees = lireAnimationsStockees();
 
   // ------------------------------------------------------------------------
   // 3. Génération dynamique des curseurs SVG vectoriels (32×32)
@@ -146,6 +174,36 @@
   var estAnime = false;
   var erreursSignalees = {};
 
+  // Suivi de la souris et du défilement pour la parallaxe
+  var sourisX = 0;
+  var sourisY = 0;
+  var defilementY = 0;
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('mousemove', function (e) {
+      sourisX = e.clientX;
+      sourisY = e.clientY;
+    }, { passive: true });
+
+    window.addEventListener('scroll', function () {
+      defilementY = window.scrollY || window.pageYOffset || 0;
+    }, { passive: true });
+  }
+
+  function hexVersRgb(hex) {
+    if (!hex) return { r: 79, g: 179, b: 201 };
+    var clean = hex.replace('#', '');
+    if (clean.length === 3) {
+      clean = clean[0] + clean[0] + clean[1] + clean[1] + clean[2] + clean[2];
+    }
+    var num = parseInt(clean, 16);
+    return {
+      r: (num >> 16) & 255,
+      g: (num >> 8) & 255,
+      b: num & 255
+    };
+  }
+
   // Détection de la préférence d'accessibilité prefers-reduced-motion
   var mediaReducedMotion = (typeof window !== 'undefined' && window.matchMedia)
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -177,6 +235,138 @@
     return canvasFond;
   }
 
+  // ------------------------------------------------------------------------
+  // 4.1 Réseau supervisé (nœuds, liens, impulsions et parallaxe)
+  // ------------------------------------------------------------------------
+  var noeudsReseau = [];
+  var impulsionsReseau = [];
+  var tempsProchaineImpulsion = 2.0;
+  var canvasMotifsHorsEcran = {};
+
+  function reinitialiserNoeuds(w, h) {
+    var surface = w * h;
+    // 40 à 70 nœuds selon la surface de l'écran
+    var cible = Math.min(70, Math.max(40, Math.floor(surface / 22000)));
+    noeudsReseau = [];
+    for (var i = 0; i < cible; i++) {
+      noeudsReseau.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 1.6 + Math.random() * 0.8
+      });
+    }
+    impulsionsReseau = [];
+    tempsProchaineImpulsion = tempsSec + 2.0 + Math.random() * 2.0;
+  }
+
+  function dessinerReseauSupervise(ctx, w, h, t) {
+    if (!noeudsReseau || noeudsReseau.length === 0) {
+      reinitialiserNoeuds(w, h);
+    }
+
+    var pal = PALETTES[themeActif] || PALETTES['sombre'];
+    var rgb = hexVersRgb(pal.accent);
+    var seuilDist = 140;
+    var seuilDistSq = seuilDist * seuilDist;
+
+    // Déplacement lent des nœuds avec rebond doux sur les bords
+    for (var i = 0; i < noeudsReseau.length; i++) {
+      var n = noeudsReseau[i];
+      n.x += n.vx;
+      n.y += n.vy;
+
+      if (n.x < 0) { n.x = 0; n.vx = Math.abs(n.vx); }
+      else if (n.x > w) { n.x = w; n.vx = -Math.abs(n.vx); }
+      if (n.y < 0) { n.y = 0; n.vy = Math.abs(n.vy); }
+      else if (n.y > h) { n.y = h; n.vy = -Math.abs(n.vy); }
+    }
+
+    // Liens entre nœuds à moins de 140 px (opacité max 0.12)
+    ctx.lineWidth = 1;
+    var liensActifs = [];
+
+    for (var a = 0; a < noeudsReseau.length; a++) {
+      var na = noeudsReseau[a];
+      for (var b = a + 1; b < noeudsReseau.length; b++) {
+        var nb = noeudsReseau[b];
+        var dx = nb.x - na.x;
+        var dy = nb.y - na.y;
+        var distSq = dx * dx + dy * dy;
+        if (distSq < seuilDistSq) {
+          var dist = Math.sqrt(distSq);
+          var alphaLien = 0.12 * (1 - dist / seuilDist);
+          ctx.strokeStyle = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alphaLien.toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(na.x, na.y);
+          ctx.lineTo(nb.x, nb.y);
+          ctx.stroke();
+
+          liensActifs.push({ na: na, nb: nb, dist: dist });
+        }
+      }
+    }
+
+    // Nœuds (opacité 0.35)
+    ctx.fillStyle = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ', 0.35)';
+    for (var k = 0; k < noeudsReseau.length; k++) {
+      var nd = noeudsReseau[k];
+      ctx.beginPath();
+      ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Déclenchement d'une impulsion lumineuse toutes les 2 à 4 s (paquet réseau)
+    if (t >= tempsProchaineImpulsion && liensActifs.length > 0) {
+      tempsProchaineImpulsion = t + 2.0 + Math.random() * 2.0;
+      var lienChoisi = liensActifs[Math.floor(Math.random() * liensActifs.length)];
+      impulsionsReseau.push({
+        na: lienChoisi.na,
+        nb: lienChoisi.nb,
+        debut: t,
+        duree: 0.6 + Math.random() * 0.4
+      });
+    }
+
+    // Dessin et progression des impulsions
+    for (var m = impulsionsReseau.length - 1; m >= 0; m--) {
+      var imp = impulsionsReseau[m];
+      var p = (t - imp.debut) / imp.duree;
+      if (p >= 0 && p <= 1) {
+        var ix = imp.na.x + (imp.nb.x - imp.na.x) * p;
+        var iy = imp.na.y + (imp.nb.y - imp.na.y) * p;
+        var opaciteImp = 0.85 * (1 - Math.abs(p - 0.5) * 0.5);
+        ctx.fillStyle = 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ', ' + opaciteImp.toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(ix, iy, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p > 1) {
+        impulsionsReseau.splice(m, 1);
+      }
+    }
+  }
+
+  function obtenirMotifHorsEcran(id, dessinateurOriginal, w, h) {
+    var cle = id + '_' + w + 'x' + h;
+    if (canvasMotifsHorsEcran[cle]) {
+      return canvasMotifsHorsEcran[cle];
+    }
+    if (typeof document === 'undefined') return null;
+    try {
+      var off = document.createElement('canvas');
+      off.width = w;
+      off.height = h;
+      var offCtx = off.getContext('2d');
+      dessinateurOriginal(offCtx, w, h, 0);
+      canvasMotifsHorsEcran[cle] = off;
+      return off;
+    } catch (err) {
+      console.warn('Erreur lors du pré-rendu hors écran pour le motif « ' + id + ' » :', err);
+      return null;
+    }
+  }
+
   function redimensionnerCanvas() {
     obtenirCanvas();
     if (!canvasFond || !ctxFond || typeof window === 'undefined') return;
@@ -192,6 +382,31 @@
 
     ctxFond.setTransform(1, 0, 0, 1, 0, 0);
     ctxFond.scale(dpr, dpr);
+
+    // Ajustement de la population de nœuds
+    if (largeurVue > 0 && hauteurVue > 0) {
+      if (noeudsReseau.length === 0) {
+        reinitialiserNoeuds(largeurVue, hauteurVue);
+      } else {
+        var surface = largeurVue * hauteurVue;
+        var cible = Math.min(70, Math.max(40, Math.floor(surface / 22000)));
+        while (noeudsReseau.length < cible) {
+          noeudsReseau.push({
+            x: Math.random() * largeurVue,
+            y: Math.random() * hauteurVue,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            r: 1.6 + Math.random() * 0.8
+          });
+        }
+        if (noeudsReseau.length > cible) {
+          noeudsReseau.length = cible;
+        }
+      }
+    }
+
+    // Réinitialisation du cache des motifs lors d'un redimensionnement
+    canvasMotifsHorsEcran = {};
 
     dessinerImage(tempsSec, true);
   }
@@ -701,16 +916,54 @@
   }
 
   // Table de routage des dessinateurs par identifiant de thème
+  // Les thèmes statiques et motifs reçoivent l'animation discrète « réseau supervisé »
+  // Contraste élevé : fond noir uni sans animation (accessibilité)
   var DESSINATEURS = {
-    'sombre': function (ctx, w, h) { dessinerStatiqueUni(ctx, w, h, '#14171B'); },
-    'clair': function (ctx, w, h) { dessinerStatiqueUni(ctx, w, h, '#F3F2EF'); },
-    'contraste-eleve': function (ctx, w, h) { dessinerStatiqueUni(ctx, w, h, '#000000'); },
-    'tons-de-gris': function (ctx, w, h) { dessinerStatiqueUni(ctx, w, h, '#1A1A1A'); },
-    'acrylique': dessinerAcrylique,
-    'carbone': dessinerCarbone,
-    'papier': dessinerPapier,
-    'bretagne': dessinerGranit,
-    'console-de-poche': dessinerLCD,
+    'sombre': function (ctx, w, h, t) {
+      dessinerStatiqueUni(ctx, w, h, PALETTES['sombre'].bg);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'clair': function (ctx, w, h, t) {
+      dessinerStatiqueUni(ctx, w, h, PALETTES['clair'].bg);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'tons-de-gris': function (ctx, w, h, t) {
+      dessinerStatiqueUni(ctx, w, h, PALETTES['tons-de-gris'].bg);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'contraste-eleve': function (ctx, w, h) {
+      dessinerStatiqueUni(ctx, w, h, '#000000');
+    },
+    'acrylique': function (ctx, w, h, t) {
+      var off = obtenirMotifHorsEcran('acrylique', dessinerAcrylique, w, h);
+      if (off) ctx.drawImage(off, 0, 0);
+      else dessinerAcrylique(ctx, w, h);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'carbone': function (ctx, w, h, t) {
+      var off = obtenirMotifHorsEcran('carbone', dessinerCarbone, w, h);
+      if (off) ctx.drawImage(off, 0, 0);
+      else dessinerCarbone(ctx, w, h);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'papier': function (ctx, w, h, t) {
+      var off = obtenirMotifHorsEcran('papier', dessinerPapier, w, h);
+      if (off) ctx.drawImage(off, 0, 0);
+      else dessinerPapier(ctx, w, h);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'bretagne': function (ctx, w, h, t) {
+      var off = obtenirMotifHorsEcran('bretagne', dessinerGranit, w, h);
+      if (off) ctx.drawImage(off, 0, 0);
+      else dessinerGranit(ctx, w, h);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
+    'console-de-poche': function (ctx, w, h, t) {
+      var off = obtenirMotifHorsEcran('console-de-poche', dessinerLCD, w, h);
+      if (off) ctx.drawImage(off, 0, 0);
+      else dessinerLCD(ctx, w, h);
+      dessinerReseauSupervise(ctx, w, h, t);
+    },
     'neon-arcade': dessinerGrilleNeon,
     'terminal-retro': dessinerCRT,
     'aurore': dessinerAurore,
@@ -721,8 +974,16 @@
     'noel': dessinerNeige
   };
 
-  // Liste des thèmes dont le fond est animé en continu
+  // Liste des thèmes dont le fond est animé en continu (tous sauf contraste-eleve)
   var THEMES_ANIMES = {
+    'sombre': true,
+    'clair': true,
+    'tons-de-gris': true,
+    'acrylique': true,
+    'carbone': true,
+    'papier': true,
+    'bretagne': true,
+    'console-de-poche': true,
     'neon-arcade': true,
     'terminal-retro': true,
     'aurore': true,
@@ -740,9 +1001,21 @@
     obtenirCanvas();
     if (!ctxFond || largeurVue <= 0 || hauteurVue <= 0) return;
 
+    var paralX = 0;
+    var paralY = 0;
+    if (!aReducedMotion() && animationsAutorisees && !forcerImageUnique) {
+      paralX = (sourisX / Math.max(1, largeurVue) - 0.5) * 14;
+      paralY = (sourisY / Math.max(1, hauteurVue) - 0.5) * 14 + (defilementY * 0.04) % 30;
+    }
+
     var dessinateur = DESSINATEURS[themeActif] || DESSINATEURS['sombre'];
     try {
+      ctxFond.save();
+      if (paralX !== 0 || paralY !== 0) {
+        ctxFond.translate(paralX, paralY);
+      }
       dessinateur(ctxFond, largeurVue, hauteurVue, t);
+      ctxFond.restore();
     } catch (err) {
       if (!erreursSignalees[themeActif]) {
         erreursSignalees[themeActif] = true;
@@ -757,7 +1030,7 @@
   function boucleAnimation(timestamp) {
     animationId = null;
 
-    if (!estAnime || (typeof document !== 'undefined' && document.hidden) || aReducedMotion()) {
+    if (!estAnime || (typeof document !== 'undefined' && document.hidden) || aReducedMotion() || !animationsAutorisees) {
       return;
     }
 
@@ -777,7 +1050,7 @@
   function demarrerBoucle() {
     arreterBoucle();
 
-    if (aReducedMotion() || !THEMES_ANIMES[themeActif]) {
+    if (aReducedMotion() || !animationsAutorisees || !THEMES_ANIMES[themeActif]) {
       estAnime = false;
       dessinerImage(0, true);
       return;
@@ -798,8 +1071,79 @@
   }
 
   // ------------------------------------------------------------------------
-  // 7. Sélecteur de thèmes DOM ([data-theme-picker] et [data-theme-name])
+  // 7. Contrôle du panneau de configuration d'affichage et sélecteurs DOM
   // ------------------------------------------------------------------------
+  function initialiserPanneauThemes() {
+    if (typeof document === 'undefined') return;
+
+    var toggleBtn = document.getElementById('theme-toggle-btn');
+    var popover = document.getElementById('theme-popover');
+    var animToggle = document.getElementById('theme-anim-toggle');
+
+    if (animToggle) {
+      animToggle.checked = animationsAutorisees;
+      animToggle.addEventListener('change', function () {
+        animationsAutorisees = animToggle.checked;
+        enregistrerAnimations(animationsAutorisees);
+        if (animationsAutorisees) {
+          demarrerBoucle();
+        } else {
+          arreterBoucle();
+          dessinerImage(0, true);
+        }
+      });
+    }
+
+    if (!toggleBtn || !popover) return;
+
+    function ouvrirPopover() {
+      popover.hidden = false;
+      // Forcer le reflow pour que l'animation CSS soit jouée proprement
+      void popover.offsetWidth;
+      popover.classList.add('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function fermerPopover(remettreFocus) {
+      if (!popover.classList.contains('is-open')) return;
+      popover.classList.remove('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      setTimeout(function () {
+        if (!popover.classList.contains('is-open')) {
+          popover.hidden = true;
+        }
+      }, 200);
+      if (remettreFocus !== false && typeof toggleBtn.focus === 'function') {
+        toggleBtn.focus();
+      }
+    }
+
+    toggleBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (popover.classList.contains('is-open')) {
+        fermerPopover(true);
+      } else {
+        ouvrirPopover();
+      }
+    });
+
+    // Fermeture par Échap (uniquement quand le panneau est ouvert)
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && popover.classList.contains('is-open')) {
+        e.preventDefault();
+        fermerPopover(true);
+      }
+    });
+
+    // Fermeture par clic à l'extérieur
+    document.addEventListener('click', function (e) {
+      if (!popover.classList.contains('is-open')) return;
+      if (!popover.contains(e.target) && !toggleBtn.contains(e.target)) {
+        fermerPopover(true);
+      }
+    });
+  }
+
   function actualiserSelecteurs() {
     if (typeof document === 'undefined') return;
 
@@ -903,6 +1247,7 @@
   function surChargementDOM() {
     redimensionnerCanvas();
     actualiserSelecteurs();
+    initialiserPanneauThemes();
     demarrerBoucle();
   }
 
@@ -918,7 +1263,7 @@
       if (document.hidden) {
         arreterBoucle();
       } else {
-        if (THEMES_ANIMES[themeActif] && !aReducedMotion()) {
+        if (THEMES_ANIMES[themeActif] && !aReducedMotion() && animationsAutorisees) {
           dernierTempsMs = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
           demarrerBoucle();
         }
@@ -954,7 +1299,22 @@
   if (typeof window !== 'undefined') {
     window.PortfolioThemes = {
       liste: THEMES,
-      appliquer: appliquerTheme
+      appliquer: appliquerTheme,
+      animationsActives: function () {
+        return animationsAutorisees;
+      },
+      definirAnimations: function (val) {
+        animationsAutorisees = !!val;
+        enregistrerAnimations(animationsAutorisees);
+        var animToggle = document.getElementById('theme-anim-toggle');
+        if (animToggle) animToggle.checked = animationsAutorisees;
+        if (animationsAutorisees) {
+          demarrerBoucle();
+        } else {
+          arreterBoucle();
+          dessinerImage(0, true);
+        }
+      }
     };
   }
 

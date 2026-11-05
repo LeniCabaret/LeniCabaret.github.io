@@ -398,12 +398,14 @@ textarea {
 }
 
 /* --------------------------------------------------------------------------
-   Styles du sélecteur de thème (.theme-picker)
+   Styles du sélecteur de thème (.theme-picker) dans le panneau flottant
+   6 pastilles par ligne, pastilles visibles de 36 px, zone cliquable de 44 px
    -------------------------------------------------------------------------- */
 .theme-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(6, 44px);
+  gap: 4px;
+  justify-content: center;
   align-items: center;
   padding: 8px 0;
 }
@@ -420,20 +422,33 @@ textarea {
   border-radius: 50%;
   padding: 0;
   margin: 0;
+  border: none;
+  background: transparent;
+  cursor: var(--cur-main, pointer);
+  box-sizing: border-box;
+}
+
+/* Pastille extérieure visible (36 px) */
+.theme-picker button::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 2px solid var(--border);
   background: var(--btn-bg, #14171B);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
-  overflow: hidden;
   box-sizing: border-box;
 }
 
-/* Pastille centrale affichant l'accent du thème */
+/* Pastille centrale affichant l'accent du thème (16 px) */
 .theme-picker button::after {
   content: '';
+  position: absolute;
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: var(--btn-accent, #4FB3C9);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
@@ -441,7 +456,7 @@ textarea {
   transition: transform 0.16s ease;
 }
 
-.theme-picker button:hover {
+.theme-picker button:hover::before {
   transform: scale(1.1);
   border-color: var(--accent);
 }
@@ -451,18 +466,186 @@ textarea {
 }
 
 /* État actif sélectionné (aria-pressed="true") */
-.theme-picker button[aria-pressed="true"] {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+.theme-picker button[aria-pressed="true"]::before {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
   border-color: var(--accent);
-  transform: scale(1.12);
-  box-shadow: 0 0 10px var(--accent);
+  transform: scale(1.08);
+  box-shadow: 0 0 8px var(--accent);
 }
 
 /* Navigation au clavier nette */
-.theme-picker button:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+.theme-picker button:focus-visible::before {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Bouton flottant rond (FAB 48 px) et Panneau Popover
+   -------------------------------------------------------------------------- */
+.theme-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: var(--cur-main, pointer);
+  z-index: 1000;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-fab:hover {
+  transform: rotate(30deg) scale(1.06);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.theme-popover {
+  position: fixed;
+  bottom: 78px;
+  right: 20px;
+  z-index: 1000;
+  width: 312px;
+  max-width: calc(100vw - 24px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.2s;
+}
+
+.theme-popover.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.theme-popover-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-popover-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.theme-popover-active-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.theme-popover-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 6px;
+}
+
+.theme-toggle-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: var(--cur-main, pointer);
+  user-select: none;
+}
+
+.theme-switch-wrap {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex: none;
+}
+
+.theme-switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.theme-switch-slider {
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-switch-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--muted);
+  border-radius: 50%;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.theme-switch-input:checked + .theme-switch-slider {
+  background-color: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.theme-switch-input:checked + .theme-switch-slider::before {
+  transform: translateX(18px);
+  background-color: var(--accent);
+}
+
+.theme-switch-input:focus-visible + .theme-switch-slider {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .theme-fab {
+    bottom: 14px;
+    right: 14px;
+  }
+  .theme-popover {
+    bottom: 70px;
+    right: 12px;
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    padding: 12px;
+  }
 }
 
 /* --------------------------------------------------------------------------

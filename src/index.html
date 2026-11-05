@@ -9,6 +9,7 @@
   <script>try{var t=localStorage.getItem('portfolio-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="assets/css/themes.css">
   <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/fx.css">
 </head>
 <body>
   <a href="#contenu" class="skip-link">Aller au contenu</a>
@@ -21,11 +22,8 @@
         <span class="live-status">
           <span class="voyant voyant-green" aria-hidden="true"></span>
           <span>dernier relevé il y a <span data-live-seconds>0</span> s</span>
+          <span class="ping-indicator" aria-hidden="true">· ping <span data-live-ping>14</span> ms</span>
         </span>
-        <div class="theme-controls">
-          <div class="theme-picker" data-theme-picker aria-label="Choix du thème"></div>
-          <span data-theme-name></span>
-        </div>
       </div>
       <nav class="topbar-nav" aria-label="Navigation principale">
         <a href="#accueil" class="nav-btn active">Accueil</a>
@@ -940,7 +938,37 @@
     <span>Hébergé sur GitHub Pages · Respect de la vie privée sans traceur</span>
   </footer>
 
+  <!-- Bouton flottant Retour en haut -->
+  <button type="button" id="back-to-top" class="back-to-top" aria-label="Retour en haut" hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- Bouton flottant Paramètres d'affichage (Thème) -->
+  <button type="button" id="theme-toggle-btn" class="theme-fab" aria-label="Paramètres d'affichage" aria-expanded="false" aria-controls="theme-popover">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+
+  <!-- Panneau Popover des thèmes -->
+  <div id="theme-popover" class="theme-popover" role="dialog" aria-label="Paramètres d'affichage" aria-modal="false" hidden>
+    <div class="theme-popover-header">
+      <span class="theme-popover-title">Thème</span>
+      <span class="theme-popover-active-name" data-theme-name>Sombre</span>
+    </div>
+    <div class="theme-picker" data-theme-picker aria-label="Choix du thème"></div>
+    <div class="theme-popover-footer">
+      <label class="theme-toggle-label" for="theme-anim-toggle">
+        <span>Animations du fond</span>
+        <span class="theme-switch-wrap">
+          <input type="checkbox" id="theme-anim-toggle" class="theme-switch-input" checked>
+          <span class="theme-switch-slider" aria-hidden="true"></span>
+        </span>
+      </label>
+    </div>
+  </div>
+
   <script src="assets/js/themes.js" defer></script>
   <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/fx.js" defer></script>
+  <script src="assets/js/fx-console.js" defer></script>
 </body>
 </html>

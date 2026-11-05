@@ -1,0 +1,259 @@
+/* Portfolio de Léni Cabaret — effets « LC-01 » (voir assets/js/fx.js) */
+
+/* Séquence de démarrage */
+.fx-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: var(--bg, #14171B);
+  cursor: pointer;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.fx-boot-fin {
+  opacity: 0;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+.fx-boot-texte {
+  margin: 0;
+  padding: 0 20px;
+  max-width: 100%;
+  font: 500 clamp(12px, 2.6vw, 15px)/1.7 var(--font-mono, 'Geist Mono', monospace);
+  color: var(--success, #5FB37E);
+  white-space: pre-wrap;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--success, #5FB37E) 45%, transparent);
+}
+.fx-boot-texte::after {
+  content: '▌';
+  margin-left: 2px;
+  animation: fx-clignote .8s steps(1) infinite;
+}
+@keyframes fx-clignote { 50% { opacity: 0; } }
+
+/* Titre tapé lettre par lettre (site.js) : garder les espaces entre les lettres en inline-block */
+#hero-title span { white-space: pre; }
+
+/* Barre de progression du défilement */
+.fx-progression {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 900;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--accent, #4FB3C9), var(--accent-end, var(--accent, #4FB3C9)));
+  box-shadow: 0 0 8px var(--accent, #4FB3C9);
+  pointer-events: none;
+}
+
+/* Bouton de la palette dans la barre du haut */
+.fx-palette-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0 12px;
+  border: 1px solid var(--border, #2A2F36);
+  border-radius: 6px;
+  background: var(--surface, #1C2026);
+  color: var(--muted, #A7AEB6);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: border-color .2s, color .2s;
+}
+.fx-palette-bouton:hover,
+.fx-palette-bouton:focus-visible {
+  border-color: var(--accent, #4FB3C9);
+  color: var(--text, #F5F4F1);
+}
+.fx-palette-bouton kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--border, #2A2F36);
+  border-radius: 4px;
+  font: 500 11px var(--font-mono, monospace);
+}
+
+/* Palette de commandes */
+.fx-palette {
+  width: min(560px, calc(100vw - 24px));
+  max-height: min(70vh, 520px);
+  margin-top: 12vh;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border, #2A2F36);
+  border-radius: 10px;
+  background: var(--surface, #1C2026);
+  color: var(--text, #F5F4F1);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45), 0 0 0 1px color-mix(in srgb, var(--accent, #4FB3C9) 25%, transparent);
+}
+.fx-palette[open] { display: flex; flex-direction: column; animation: fx-ouvre .18s ease-out; }
+.fx-palette::backdrop { background: rgba(0, 0, 0, .5); backdrop-filter: blur(3px); }
+@keyframes fx-ouvre { from { opacity: 0; transform: translateY(-8px) scale(.98); } }
+.fx-palette-champ {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--border, #2A2F36);
+  background: transparent;
+  color: var(--text, #F5F4F1);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+}
+.fx-palette-liste {
+  flex: 1;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+}
+.fx-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.fx-palette-item.fx-actif {
+  background: color-mix(in srgb, var(--accent, #4FB3C9) 16%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent, #4FB3C9);
+}
+.fx-palette-groupe {
+  min-width: 64px;
+  color: var(--muted, #A7AEB6);
+  font: 500 11px var(--font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.fx-palette-vide { padding: 14px 12px; color: var(--muted, #A7AEB6); }
+.fx-palette-aide {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border, #2A2F36);
+  color: var(--muted, #A7AEB6);
+  font-size: 12px;
+}
+
+/* Notification */
+.fx-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 950;
+  max-width: calc(100vw - 32px);
+  padding: 10px 16px;
+  border: 1px solid var(--border, #2A2F36);
+  border-radius: 8px;
+  background: var(--surface, #1C2026);
+  color: var(--text, #F5F4F1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+.fx-toast.fx-visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* Console interactive (accueil) */
+.fx-console { padding: 0; overflow: hidden; }
+.fx-console-barre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border, #2A2F36);
+  background: var(--surface-2, var(--surface, #232830));
+}
+.fx-console-barre h2 { margin: 0; font: 600 13px var(--font-mono, monospace); color: var(--muted, #A7AEB6); }
+.fx-console-points { display: inline-flex; gap: 6px; }
+.fx-console-points i { width: 10px; height: 10px; border-radius: 50%; background: var(--border, #2A2F36); }
+.fx-console-points i:first-child { background: var(--danger, #E06A62); }
+.fx-console-points i:nth-child(2) { background: var(--warning, #D9A441); }
+.fx-console-points i:last-child { background: var(--success, #5FB37E); }
+.fx-console-sortie {
+  height: 220px;
+  padding: 14px 16px 6px;
+  overflow-y: auto;
+  font: 400 14px/1.6 var(--font-mono, monospace);
+  color: var(--text, #F5F4F1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.fx-console-sortie a { color: var(--accent, #4FB3C9); }
+.fx-console-echo { color: var(--muted, #A7AEB6); }
+.fx-console-ok { color: var(--success, #5FB37E); }
+.fx-console-erreur { color: var(--danger, #E06A62); }
+.fx-console-ligne { display: flex; align-items: center; gap: 8px; padding: 6px 16px 12px; }
+.fx-console-invite { flex: none; font: 600 14px var(--font-mono, monospace); color: var(--success, #5FB37E); }
+.fx-console-champ {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--text, #F5F4F1);
+  font: 400 14px var(--font-mono, monospace);
+  caret-color: var(--accent, #4FB3C9);
+  outline: none;
+}
+.fx-console-ligne:focus-within { box-shadow: inset 0 -2px 0 var(--accent, #4FB3C9); }
+.fx-console-aide { margin: 0; padding: 0 16px 14px; color: var(--muted, #A7AEB6); font-size: 13px; }
+.fx-console-aide button {
+  min-height: 32px;
+  margin: 2px;
+  padding: 0 10px;
+  border: 1px solid var(--border, #2A2F36);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text, #F5F4F1);
+  font: 500 12px var(--font-mono, monospace);
+}
+.fx-console-aide button:hover,
+.fx-console-aide button:focus-visible { border-color: var(--accent, #4FB3C9); }
+
+/* Schéma animé du réseau Albatros */
+.fx-topo { margin: 20px 0 0; }
+.fx-topo svg { display: block; width: 100%; height: auto; }
+.fx-topo figcaption { margin-top: 8px; color: var(--muted, #A7AEB6); font-size: 13px; }
+.fx-topo-hote { fill: color-mix(in srgb, var(--accent, #4FB3C9) 5%, transparent); stroke: var(--border, #2A2F36); stroke-dasharray: 6 5; }
+.fx-topo-hote-titre { fill: var(--muted, #A7AEB6); font: 600 12px var(--font-mono, monospace); }
+.fx-topo-lien { fill: none; stroke: var(--border, #2A2F36); stroke-width: 2; pointer-events: stroke; }
+.fx-topo-lien:hover { stroke: var(--accent, #4FB3C9); }
+.fx-topo-flux {
+  fill: none;
+  stroke: var(--accent, #4FB3C9);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 14;
+  opacity: .55;
+  pointer-events: none;
+  animation: fx-flux 1.6s linear infinite;
+}
+@keyframes fx-flux { to { stroke-dashoffset: -34; } }
+.fx-topo-paquet { fill: var(--accent-end, var(--accent, #4FB3C9)); filter: drop-shadow(0 0 4px var(--accent, #4FB3C9)); }
+.fx-topo-noeud rect { fill: var(--surface, #1C2026); stroke: var(--border, #2A2F36); }
+.fx-topo-serveur rect, .fx-topo-poste rect { stroke: var(--accent, #4FB3C9); }
+.fx-topo-nuage rect { stroke-dasharray: 4 4; }
+.fx-topo-titre { fill: var(--text, #F5F4F1); font: 600 13px var(--font-sans, 'Geist', sans-serif); }
+.fx-topo-sous { fill: var(--muted, #A7AEB6); font: 400 10px var(--font-mono, monospace); }
+.fx-topo-voyant { fill: var(--success, #5FB37E); animation: fx-voyant 2.4s ease-in-out infinite; }
+@keyframes fx-voyant { 50% { opacity: .35; } }
+
+@media (max-width: 760px) {
+  .fx-console-sortie { height: 180px; font-size: 13px; }
+  .fx-palette-bouton span,
+  .fx-palette-bouton kbd { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-boot, .fx-palette, .fx-toast, .fx-progression,
+  .fx-topo-flux, .fx-topo-voyant { animation: none !important; transition: none !important; }
+}
