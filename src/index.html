@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Léni Cabaret · Tableau de bord SISR</title>
+  <meta name="description" content="Portfolio de Léni Cabaret : technicien support helpdesk en alternance chez Loste Tradi-France, BTS SIO SISR à l'AFTEC Rennes (session 2027).">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/themes.css">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a href="#contenu" class="skip-link">Aller au contenu</a>
+
+  <!-- Barre du haut (Top bar de supervision) -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <span class="host-badge">LC-01 · tableau de bord</span>
+        <span class="live-status">
+          <span class="voyant voyant-green" aria-hidden="true"></span>
+          <span>dernier relevé il y a <span data-live-seconds>0</span> s</span>
+        </span>
+        <div class="theme-controls">
+          <div class="theme-picker" data-theme-picker aria-label="Choix du thème"></div>
+          <span data-theme-name></span>
+        </div>
+      </div>
+      <nav class="topbar-nav" aria-label="Navigation principale">
+        <a href="#accueil" class="nav-btn active">Accueil</a>
+        <a href="#alternance" class="nav-btn">Alternance</a>
+        <a href="#projets" class="nav-btn">Projets</a>
+        <a href="e5.html" class="nav-btn">Tableau E5</a>
+        <a href="mini-si-albatros.html" class="nav-btn">Mini-SI Albatros</a>
+        <a href="#competences" class="nav-btn">Compétences</a>
+        <a href="#parcours" class="nav-btn">Parcours</a>
+        <a href="#veille" class="nav-btn">Veille</a>
+        <a href="#contact" class="nav-btn">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu" class="dashboard-container">
+    <!-- 1. En-tête : Identité de l'hôte et statut -->
+    <section id="accueil" class="panel hero-panel" aria-labelledby="hero-title">
+      <div class="hero-header">
+        <div class="hero-identity">
+          <div class="hero-status-tag">
+            <span class="voyant voyant-green" aria-hidden="true"></span>
+            <span>En service · Hôte LC-01</span>
+          </div>
+          <h1 id="hero-title">Léni Cabaret</h1>
+          <p class="subtitle">Technicien support helpdesk en alternance · 2<sup>e</sup> année de BTS SIO option SISR</p>
+        </div>
+        <div class="btn-group">
+          <a href="#projets" class="btn btn-primary">Voir les projets</a>
+          <a href="e5.html" class="btn btn-secondary">Tableau de synthèse E5</a>
+          <a href="assets/docs/tableau-synthese-e5-leni-cabaret.xlsx" download class="btn btn-secondary">Télécharger l'Excel E5</a>
+          <a href="#contact" class="btn btn-secondary">Contactez-moi</a>
+        </div>
+      </div>
+      <p class="hero-summary">
+        J'aime résoudre les problèmes du quotidien, remettre de l'ordre dans les environnements Windows et créer des outils utiles quand un besoin revient souvent.
+      </p>
+    </section>
+
+    <!-- 2. Rangée de tuiles statistiques (Stats Tiles) -->
+    <section class="stats-grid" aria-label="Métriques système">
+      <!-- Tuile Uptime (Âge calculé en JS depuis le 20/07/1998) -->
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Uptime</span>
+          <span class="voyant voyant-green" aria-hidden="true" title="Actif"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number"><span data-stat-uptime data-birth="1998-07-20">--</span><span class="stat-unit">ans</span></div>
+        </div>
+        <p class="stat-desc">Âge calculé · Système en ligne</p>
+      </article>
+
+      <!-- Tuile Bénévolat (Années depuis 2016 calculées en JS) -->
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Bénévolat</span>
+          <span class="voyant voyant-amber" aria-hidden="true" title="Engagement continu"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number"><span data-stat-benevolat data-start="2016">--</span><span class="stat-unit">ans</span></div>
+        </div>
+        <p class="stat-desc">Depuis 2016 · Régie Jeux en Réseau</p>
+      </article>
+
+      <!-- Tuile Réalisations E5 (Nombre calculé depuis les données avec mini histogramme animé) -->
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Réalisations E5</span>
+          <span class="voyant voyant-blue" aria-hidden="true" title="Référentiel BTS SIO"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number"><span data-stat-e5 data-count="22">22</span></div>
+          <div class="stat-histogram" aria-label="Histogramme : 8 en formation, 7 en entreprise 1re année, 7 en entreprise 2e année">
+            <span class="hist-bar" style="height: 100%" title="Formation : 8 réalisations"></span>
+            <span class="hist-bar" style="height: 87.5%" title="Entreprise 1re année : 7 réalisations"></span>
+            <span class="hist-bar" style="height: 87.5%" title="Entreprise 2e année : 7 réalisations"></span>
+          </div>
+        </div>
+        <p class="stat-desc">8 en formation · 14 en entreprise</p>
+      </article>
+
+      <!-- Tuile Anglais C1 Cambridge -->
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Anglais</span>
+          <span class="voyant voyant-green" aria-hidden="true" title="Certifié"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number">C1</div>
+        </div>
+        <p class="stat-desc">Certification Cambridge</p>
+      </article>
+    </section>
+
+    <!-- 3. Panneau Description de l'hôte avec boutons -->
+    <section class="panel" aria-labelledby="desc-title">
+      <h2 id="desc-title" class="panel-title">
+        <span>Description de l'hôte · Configuration système</span>
+        <span class="panel-title-badge">NODE: LC-01</span>
+      </h2>
+      <div class="host-specs-grid">
+        <div class="spec-item">
+          <span class="spec-key">Hôte</span>
+          <span class="spec-val">LC-01</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Statut</span>
+          <span class="spec-val">En alternance (Loste Tradi-France)</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Cursus</span>
+          <span class="spec-val">BTS SIO SISR, 2/2</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Centre de formation</span>
+          <span class="spec-val">AFTEC Rennes (session 2027)</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Localisation</span>
+          <span class="spec-val">Rennes (Bretagne)</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Mobilité</span>
+          <span class="spec-val">Permis B et véhicule</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Contact principal</span>
+          <span class="spec-val">cabaret.leni@gmail.com</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Objectif</span>
+          <span class="spec-val">Diplôme BTS SIO SISR en 2027</span>
+        </div>
+      </div>
+      <div class="btn-group">
+        <a href="#projets" class="btn btn-primary">Explorer les hôtes surveillés (projets)</a>
+        <a href="e5.html" class="btn btn-secondary">Consulter le tableau de synthèse E5</a>
+        <a href="mini-si-albatros.html" class="btn btn-secondary">Dossier Mini-SI Albatros</a>
+        <a href="#contact" class="btn btn-secondary">Envoyer un message</a>
+      </div>
+    </section>
+
+    <!-- 4. Panneau Alternance chez Loste Tradi-France -->
+    <section id="alternance" class="panel" aria-labelledby="alt-title">
+      <h2 id="alt-title" class="panel-title">
+        <span>Poste en entreprise · Commutateur vert</span>
+        <span class="panel-title-badge">Depuis septembre 2025</span>
+      </h2>
+      <div class="alternance-layout">
+        <div>
+          <div class="company-badge-header">
+            <img src="assets/img/loste-tradi-france.png" alt="Logo Loste Tradi-France" width="96" height="59" class="company-logo">
+            <div class="company-title-wrap">
+              <h3 class="company-name">Loste Tradi-France</h3>
+              <span class="company-meta">
+                <span class="voyant voyant-green" aria-hidden="true"></span>
+                Technicien support helpdesk · Site de Bédée
+              </span>
+            </div>
+          </div>
+          <p>
+            Entreprise française de l'agroalimentaire spécialisée dans la charcuterie : plus de 150 ans de savoir-faire, 10 ateliers et 5 sites de distribution. J'y suis technicien support helpdesk, à Bédée.
+          </p>
+          <ul class="missions-list">
+            <li>Demandes utilisateurs et qualification des incidents</li>
+            <li>Postes, téléphones, PDA et imprimantes</li>
+            <li>Dépannage de premier niveau sous Windows, relais via GLPI</li>
+          </ul>
+        </div>
+        <div class="inventory-tag">
+          <div class="inventory-header">Inventaire Loste Tradi-France</div>
+          <div><strong>Poste :</strong> Technicien support helpdesk</div>
+          <div><strong>Affecté depuis :</strong> Septembre 2025</div>
+          <div><strong>Uplink 1 :</strong> GLPI (gestion du parc et des incidents)</div>
+          <div><strong>Uplink 2 :</strong> ERP Copilote</div>
+        </div>
+      </div>
+
+      <!-- Réalisations menées en entreprise -->
+      <div class="switch-table-wrapper">
+        <table class="switch-table">
+          <thead>
+            <tr>
+              <th scope="col">Port</th>
+              <th scope="col">Réalisation en alternance</th>
+              <th scope="col">Période</th>
+              <th scope="col">Compétences associées</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="spec-key">01</span></td>
+              <td><strong>GPO et script pour activation et mise à jour du pack Office</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Assistance, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">02</span></td>
+              <td><strong>Mise à jour et correction des entrées GLPI</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Patrimoine</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">03</span></td>
+              <td><strong>Renouvellement et suivi tri-annuel du parc informatique</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Patrimoine, Projet, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">04</span></td>
+              <td><strong>Macro Excel : contacts du CRM vers Outlook</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Assistance, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">05</span></td>
+              <td><strong>Script PowerShell pour superviser plusieurs postes (Parsec Multiview)</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Assistance, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">06</span></td>
+              <td><strong>Procédures en logigrammes pour la résolution interne</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Assistance</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">07</span></td>
+              <td><strong>Traitement des tickets utilisateurs de niveau 1 et 2</strong></td>
+              <td>1<sup>re</sup> année</td>
+              <td>Assistance</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">08</span></td>
+              <td><strong>Investigations et tests pour l'activation du MFA via Windows Hello</strong></td>
+              <td>2<sup>e</sup> année</td>
+              <td>Patrimoine, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">09</span></td>
+              <td><strong>Préparation de nouveaux PDA (enrôlement MDM, inventaire)</strong></td>
+              <td>2<sup>e</sup> année</td>
+              <td>Patrimoine, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">10</span></td>
+              <td><strong>Préparation et déploiement de postes de travail (masterisation)</strong></td>
+              <td>2<sup>e</sup> année</td>
+              <td>Patrimoine, Service</td>
+            </tr>
+            <tr>
+              <td><span class="spec-key">11</span></td>
+              <td><strong>Gestion des comptes et des droits Active Directory (arrivées/départs)</strong></td>
+              <td>2<sup>e</sup> année</td>
+              <td>Patrimoine</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Tableau « Hôtes surveillés · projets » -->
+    <section id="projets" class="panel" aria-labelledby="proj-title">
+      <h2 id="proj-title" class="panel-title">
+        <span>Hôtes surveillés · Projets</span>
+        <span class="panel-title-badge">7 projets inventoriés</span>
+      </h2>
+      <div class="table-responsive">
+        <table class="projects-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 44px">État</th>
+              <th scope="col">Projet</th>
+              <th scope="col">Contexte</th>
+              <th scope="col">Outils &amp; Technologies</th>
+              <th scope="col">Action / Lien</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Mini-SI Albatros -->
+            <tr>
+              <td><span class="voyant voyant-green" aria-hidden="true" title="Opérationnel"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">Mini-SI Albatros</span>
+                  <span class="tag-tools">3 VM · 9 conteneurs Docker · RTO mesuré 41 s</span>
+                </div>
+              </td>
+              <td>Projet seul (01/09/26 au 09/10/26) · PME fictive de 50 postes</td>
+              <td>Active Directory, GPO, Docker, GLPI, Squid, Zabbix 7, Loki, Grafana, restic, MinIO</td>
+              <td>
+                <a href="mini-si-albatros.html" class="btn btn-secondary">Consulter le dossier projet &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- E6 MicroTech -->
+            <tr>
+              <td><span class="voyant voyant-blue" aria-hidden="true" title="En cours"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">E6 MicroTech : pare-feu d'une PME de 50 salariés</span>
+                  <span class="tag-tools">FortiGate MT-FW01 · 11 VLAN · Politique « tout bloquer, autoriser le nécessaire »</span>
+                  <img src="assets/img/projets/microtech-regles-extrait.jpg" alt="Politiques du FortiGate : deux règles de test acceptent le ping, tout le reste est refusé" class="project-preview-thumb" width="400" height="150" loading="lazy">
+                </div>
+              </td>
+              <td>Formation BTS SIO, en cours · Responsable du pare-feu FortiGate</td>
+              <td>FortiGate 100D, VLAN, DHCP, Cisco 2960-XR, Git</td>
+              <td>
+                <a href="e5.html" class="btn btn-secondary">Voir dans la matrice E5 &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- Cyberattaque Sony Pictures -->
+            <tr>
+              <td><span class="voyant voyant-blue" aria-hidden="true" title="Terminé"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">Analyse de la cyberattaque de Sony Pictures</span>
+                  <span class="tag-tools">Chaîne d'attaque en 6 étapes · Perspective RSSI</span>
+                </div>
+              </td>
+              <td>Formation BTS SIO (juin 2026) · Rapport technique et soutenance</td>
+              <td>Rapport d'analyse de 9 pages, présentation de 15 minutes</td>
+              <td>
+                <a href="assets/docs/analyse-attaque-sony-pictures-2014.pdf" target="_blank" rel="noopener" class="btn btn-secondary">Consulter le PDF (9 pages) &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- Domaine Windows avec GLPI et LDAP -->
+            <tr>
+              <td><span class="voyant voyant-blue" aria-hidden="true" title="Terminé"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">Domaine Windows avec GLPI et LDAP</span>
+                  <span class="tag-tools">Interconnexion annuaire et gestionnaire de tickets</span>
+                </div>
+              </td>
+              <td>Formation BTS SIO (01/01/26 au 31/01/26)</td>
+              <td>Windows Server 2025, Active Directory, DHCP, DNS, Ubuntu Server, GLPI, LDAP</td>
+              <td>
+                <a href="e5.html" class="btn btn-secondary">Voir dans la matrice E5 &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- pfSense entre deux sous-réseaux -->
+            <tr>
+              <td><span class="voyant voyant-blue" aria-hidden="true" title="Terminé"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">pfSense entre deux sous-réseaux</span>
+                  <span class="tag-tools">Segmentation réseau et filtrage des flux</span>
+                </div>
+              </td>
+              <td>Formation BTS SIO (01/01/26 au 28/02/26)</td>
+              <td>pfSense, Debian, Windows Server, DNS, DHCP, routage statique</td>
+              <td>
+                <a href="e5.html" class="btn btn-secondary">Voir dans la matrice E5 &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- Superviseur JER -->
+            <tr>
+              <td><span class="voyant voyant-amber" aria-hidden="true" title="Bêta 0.6"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">Superviseur JER</span>
+                  <span class="tag-tools">Pilotage régie pour espaces publics numériques</span>
+                </div>
+              </td>
+              <td>Projet personnel &amp; bénévolat (bêta 0.6) · EPN Bretagne Porte de Loire Communauté</td>
+              <td>C#, .NET, WinForms, tests automatisés, installateur &amp; version portable</td>
+              <td>
+                <a href="e5.html" class="btn btn-secondary">Voir dans la matrice E5 &rarr;</a>
+              </td>
+            </tr>
+
+            <!-- Parsec Multiview -->
+            <tr>
+              <td><span class="voyant voyant-amber" aria-hidden="true" title="Actif"></span></td>
+              <td>
+                <div class="project-name-cell">
+                  <span class="project-title">Parsec Multiview</span>
+                  <span class="tag-tools">Supervision multi-postes simultanée</span>
+                </div>
+              </td>
+              <td>Projet personnel &amp; outillage helpdesk</td>
+              <td>PowerShell, WinForms, API Win32</td>
+              <td>
+                <a href="e5.html" class="btn btn-secondary">Voir dans la matrice E5 &rarr;</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. Panneau Compétences techniques -->
+    <section id="competences" class="panel" aria-labelledby="comp-title">
+      <h2 id="comp-title" class="panel-title">
+        <span>Sondes techniques · Compétences clés</span>
+        <span class="panel-title-badge">SISR &amp; Support</span>
+      </h2>
+      <div class="host-specs-grid">
+        <div class="spec-item">
+          <span class="spec-key">Systèmes</span>
+          <span class="spec-val">Windows Server, Active Directory, GPO, Ubuntu Server, Debian, LDAP, GLPI</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Réseaux</span>
+          <span class="spec-val">TCP/IP, VLAN, DNS, DHCP, routage statique, pfSense, FortiGate 100D, switchs Cisco</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Support &amp; Outillage</span>
+          <span class="spec-val">Diagnostic utilisateurs L1/L2, postes, PDA &amp; imprimantes, PowerShell, C# / .NET, macros Excel</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key">Sécurité</span>
+          <span class="spec-val">Pare-feu, MFA (Windows Hello / FIDO2), analyse d'incident, PRA / sauvegarde restic, virtualisation</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Carte de chaleur E5 (Heatmap de supervision) -->
+    <section id="e5-heatmap" class="panel" aria-labelledby="heatmap-title">
+      <h2 id="heatmap-title" class="panel-title">
+        <span>Carte de chaleur E5 · 22 réalisations surveillées</span>
+        <span class="panel-title-badge">Matrice des 6 compétences</span>
+      </h2>
+      <p class="heatmap-intro">
+        Aperçu des 22 réalisations du portefeuille d'épreuve E5 et mobilisation des 6 compétences du référentiel SISR.
+      </p>
+
+      <div class="heatmap-grid" aria-label="Carte de chaleur des réalisations E5">
+        <!-- 1 à 8 : Formation -->
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">01. SRV-WIN : AD DS, DHCP &amp; DNS</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">02. SRV-LNX : Serveur GLPI</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">03. Page web dynamique publiée en ligne</span>
+          <div class="heatmap-cells" aria-label="Compétence : Présence en ligne">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell active" title="Présence en ligne mobilisée"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">04. Configuration routeur pfSense</span>
+          <div class="heatmap-cells" aria-label="Compétence : Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">05. Déploiement mini-SI Albatros (AD, Docker, PRA)</span>
+          <div class="heatmap-cells" aria-label="Compétences : Projet, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell active" title="Projet mobilisé"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">06. Veille technologique : Game-Based Learning</span>
+          <div class="heatmap-cells" aria-label="Compétence : Dév. pro">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell active" title="Dév. pro mobilisé"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">07. Création et hébergement du portfolio en ligne</span>
+          <div class="heatmap-cells" aria-label="Compétences : Présence en ligne, Dév. pro">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell active" title="Présence en ligne mobilisée"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell active" title="Dév. pro mobilisé"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">08. Certifications en ligne (Cisco, ANSSI, PIX)</span>
+          <div class="heatmap-cells" aria-label="Compétence : Dév. pro">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell active" title="Dév. pro mobilisé"></span>
+          </div>
+        </div>
+
+        <!-- 9 à 15 : Entreprise 1re année -->
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">09. GPO &amp; script pack Office</span>
+          <div class="heatmap-cells" aria-label="Compétences : Assistance, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">10. Mise à jour des entrées GLPI</span>
+          <div class="heatmap-cells" aria-label="Compétence : Patrimoine">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">11. Renouvellement tri-annuel du parc</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Projet, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell active" title="Projet mobilisé"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">12. Macro Excel contacts CRM vers Outlook</span>
+          <div class="heatmap-cells" aria-label="Compétences : Assistance, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">13. Script PowerShell Parsec Multiview</span>
+          <div class="heatmap-cells" aria-label="Compétences : Assistance, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">14. Procédures en logigrammes</span>
+          <div class="heatmap-cells" aria-label="Compétence : Assistance">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">15. Traitement des tickets utilisateurs L1/L2</span>
+          <div class="heatmap-cells" aria-label="Compétence : Assistance">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+
+        <!-- 16 à 22 : Entreprise 2e année -->
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">16. MFA via Windows Hello (2 000 postes)</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">17. Préparation et enrôlement de nouveaux PDA (MDM)</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">18. Superviseur-JER en application complète</span>
+          <div class="heatmap-cells" aria-label="Compétences : Projet, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell active" title="Projet mobilisé"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">19. Préparation et déploiement de postes (master)</span>
+          <div class="heatmap-cells" aria-label="Compétences : Patrimoine, Service">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">20. Gestion des comptes &amp; droits Active Directory</span>
+          <div class="heatmap-cells" aria-label="Compétence : Patrimoine">
+            <span class="heatmap-cell active" title="Patrimoine mobilisé"></span>
+            <span class="heatmap-cell" title="Assistance"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">21. Mise en service casques VR Meta Quest 2</span>
+          <div class="heatmap-cells" aria-label="Compétences : Assistance, Service">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell active" title="Service mobilisé"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+        <div class="heatmap-row">
+          <span class="heatmap-row-title">22. Diagnostic des pannes emaXR &amp; SteamVR</span>
+          <div class="heatmap-cells" aria-label="Compétence : Assistance">
+            <span class="heatmap-cell" title="Patrimoine"></span>
+            <span class="heatmap-cell active" title="Assistance mobilisée"></span>
+            <span class="heatmap-cell" title="Présence en ligne"></span>
+            <span class="heatmap-cell" title="Projet"></span>
+            <span class="heatmap-cell" title="Service"></span>
+            <span class="heatmap-cell" title="Dév. pro"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="heatmap-legend">
+        <span class="legend-item"><span class="heatmap-cell active"></span> Compétence mobilisée</span>
+        <span class="legend-item"><span class="heatmap-cell"></span> Non mobilisée</span>
+        <span class="legend-item" style="margin-left: auto">
+          <a href="e5.html" class="btn btn-secondary" style="min-height: 38px; padding: 0 14px">Ouvrir le tableau de synthèse complet &rarr;</a>
+        </span>
+      </div>
+    </section>
+
+    <!-- 8. Chronologie 2016 -> 2027 en barres de Gantt -->
+    <section id="parcours" class="panel" aria-labelledby="parcours-title">
+      <h2 id="parcours-title" class="panel-title">
+        <span>Chronologie d'activité · Barres de Gantt</span>
+        <span class="panel-title-badge">2016 &rarr; 2027</span>
+      </h2>
+      <div class="gantt-wrapper">
+        <div class="gantt-board">
+          <div class="gantt-header-years">
+            <span>Activité / Expérience</span>
+            <span>2016</span>
+            <span>2017</span>
+            <span>2018</span>
+            <span>2019</span>
+            <span>2020</span>
+            <span>2021</span>
+            <span>2022</span>
+            <span>2023</span>
+            <span>2024</span>
+            <span>2025</span>
+            <span style="color: var(--text); font-weight: 700">2026</span>
+            <span>2027</span>
+          </div>
+
+          <!-- Bénévolat Jeux en Réseau -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Bénévolat Jeux en Réseau</span>
+              <span class="gantt-sub">Depuis 2016 · EPN Bretagne</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 2 / span 12">
+              <div class="gantt-bar warning" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Facteur -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Facteur</span>
+              <span class="gantt-sub">2018 à 2021 · Rennes</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 4 / span 3">
+              <div class="gantt-bar" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Surveillant de nuit -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Surveillant de nuit</span>
+              <span class="gantt-sub">2021 à 2023 · Adapei 35</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 7 / span 2">
+              <div class="gantt-bar" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Technicien télécom D3 -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Technicien télécom D3</span>
+              <span class="gantt-sub">2023 à 2024</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 9 / span 1">
+              <div class="gantt-bar" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Moniteur-éducateur -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Moniteur-éducateur</span>
+              <span class="gantt-sub">Depuis 2024 · Adapei 35</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 10 / span 3">
+              <div class="gantt-bar" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- BTS SIO SISR -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">BTS SIO option SISR</span>
+              <span class="gantt-sub">2025 à 2027 · AFTEC Rennes</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 11 / span 2">
+              <div class="gantt-bar accent" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Alternance Loste Tradi-France -->
+          <div class="gantt-row">
+            <div class="gantt-label">
+              <span class="gantt-title">Alternance Loste Tradi-France</span>
+              <span class="gantt-sub">2025 à 2027 · Bédée</span>
+            </div>
+            <div class="gantt-bar-slot" style="grid-column: 11 / span 2">
+              <div class="gantt-bar success" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Panneau Bénévolat : La régie des Jeux en Réseau -->
+    <section id="benevolat" class="panel" aria-labelledby="ben-title">
+      <h2 id="ben-title" class="panel-title">
+        <span>Bénévolat &amp; Animation technique</span>
+        <span class="panel-title-badge">Depuis 2016</span>
+      </h2>
+      <div class="alternance-layout">
+        <div>
+          <h3 style="margin: 0 0 10px; font-size: 22px">La régie des Jeux en Réseau</h3>
+          <p>
+            J'anime les sessions de jeu en réseau des espaces publics numériques de Bretagne Porte de Loire Communauté. J'y apprends à rendre la technique compréhensible pour tous les publics. Quand un besoin revenait à chaque session, j'ai construit l'outil qui manquait.
+          </p>
+          <div class="btn-group">
+            <a href="e5.html" class="btn btn-secondary">Superviseur JER</a>
+            <a href="e5.html" class="btn btn-secondary">Parsec Multiview</a>
+          </div>
+        </div>
+        <div class="host-specs-grid" style="margin: 0">
+          <div class="spec-item">
+            <span class="spec-key">Régie Poste 1</span>
+            <span class="spec-val"><span class="voyant voyant-green" aria-hidden="true"></span> En jeu · Supervision active</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-key">Régie Poste 2</span>
+            <span class="spec-val"><span class="voyant voyant-green" aria-hidden="true"></span> En jeu · Flux stable</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-key">Régie Poste 3</span>
+            <span class="spec-val"><span class="voyant voyant-green" aria-hidden="true"></span> Prêt · Session connectée</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-key">Régie Poste 4</span>
+            <span class="spec-val"><span class="voyant voyant-green" aria-hidden="true"></span> En jeu · Audio routé</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Panneau Veille technologique -->
+    <section id="veille" class="panel" aria-labelledby="veille-title">
+      <h2 id="veille-title" class="panel-title">
+        <span>Veille technologique · Game-Based Learning</span>
+        <span class="panel-title-badge">Présentation réalisée</span>
+      </h2>
+      <h3 class="veille-question">Dans quelles conditions le jeu vidéo aide-t-il vraiment à apprendre ?</h3>
+      <div class="veille-grid">
+        <article class="veille-card">
+          <h4 class="veille-card-title">Pourquoi ce sujet</h4>
+          <p class="veille-card-text">
+            Il relie le jeu vidéo, mon expérience d'animation en espaces publics numériques et l'engagement dans l'apprentissage.
+          </p>
+        </article>
+        <article class="veille-card">
+          <h4 class="veille-card-title">Ce que j'observe</h4>
+          <p class="veille-card-text">
+            Kahoot, Minecraft, CodeCombat ou Kerbal Space Program aident à comprendre et mémoriser en rendant l'élève actif face aux concepts techniques.
+          </p>
+        </article>
+        <article class="veille-card">
+          <h4 class="veille-card-title">Ce qui demande du recul</h4>
+          <p class="veille-card-text">
+            Sans objectif pédagogique précis, cadre structuré et réflexion sur le temps d'écran, l'outil devient contre-productif.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 11. Panneau CONTACT intitulé « Contactez-moi » (RÈGLE : Aucun vocabulaire de ticket) -->
+    <section id="contact" class="panel" aria-labelledby="contact-title">
+      <h2 id="contact-title" class="panel-title">
+        <span>Communication directe</span>
+        <span class="panel-title-badge">Canal ouvert</span>
+      </h2>
+      <div class="contact-layout">
+        <div class="contact-info">
+          <h3 style="margin: 0; font-size: 26px">Contactez-moi</h3>
+          <p class="contact-intro">
+            Un stage, une opportunité d'alternance, un échange autour d'un projet ou une question technique : vous pouvez m'écrire via ce formulaire ou directement par email.
+          </p>
+          <div class="contact-links">
+            <a href="mailto:cabaret.leni@gmail.com" class="contact-link-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span>cabaret.leni@gmail.com</span>
+            </a>
+            <a href="https://github.com/LeniCabaret" target="_blank" rel="noopener" class="contact-link-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+              <span>github.com/LeniCabaret</span>
+            </a>
+          </div>
+        </div>
+
+        <form data-form action="https://api.web3forms.com/submit" method="POST" class="contact-form">
+          <input type="hidden" name="access_key" value="__WEB3FORMS_KEY__">
+          <input type="hidden" name="subject" value="Nouveau message depuis le portfolio">
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" hidden>
+
+          <div class="form-group">
+            <label for="c-email">Votre adresse email</label>
+            <input id="c-email" type="email" name="email" required autocomplete="email" placeholder="nom@domaine.fr">
+          </div>
+
+          <div class="form-group">
+            <label for="c-message">Votre message</label>
+            <textarea id="c-message" name="message" required minlength="10" placeholder="Décrivez votre demande ou le contexte de votre message..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+          <p data-form-status role="status" aria-live="polite" class="form-status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Portfolio de Léni Cabaret · BTS SIO SISR (AFTEC Rennes)</span>
+    <span>Hébergé sur GitHub Pages · Respect de la vie privée sans traceur</span>
+  </footer>
+
+  <script src="assets/js/themes.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
+</body>
+</html>

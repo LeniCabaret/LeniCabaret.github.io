@@ -1,0 +1,114 @@
+[
+ {
+  "src": "assets/img/projets/mini-si/mini-si-01.webp",
+  "alt": "Schéma logique du réseau Albatros",
+  "w": 1600,
+  "h": 1743,
+  "ko": 51
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-02.webp",
+  "alt": "ipconfig -all sur SRV-DC01",
+  "w": 1600,
+  "h": 1465,
+  "ko": 107
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-03.webp",
+  "alt": "docker ps sur SRV-LNX01",
+  "w": 1422,
+  "h": 974,
+  "ko": 110
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-04.webp",
+  "alt": "Utilisateurs de l'OU ALBATROS",
+  "w": 1600,
+  "h": 1479,
+  "ko": 51
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-05.webp",
+  "alt": "Groupe GG-IT",
+  "w": 1600,
+  "h": 1479,
+  "ko": 50
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-06.webp",
+  "alt": "dcdiag sur SRV-DC01",
+  "w": 1600,
+  "h": 1479,
+  "ko": 116
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-07.webp",
+  "alt": "GPO, paramètres proxy IE10 alignés sur 192.168.205.3",
+  "w": 1414,
+  "h": 1044,
+  "ko": 72
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-08.webp",
+  "alt": "GPO, page d'accueil IE10 alignée sur 192.168.205.3",
+  "w": 1088,
+  "h": 1006,
+  "ko": 60
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-09.webp",
+  "alt": "GPO, script de démarrage",
+  "w": 1600,
+  "h": 1479,
+  "ko": 76
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-10.webp",
+  "alt": "netsh-proxy.bat aligné sur 192.168.205.3",
+  "w": 1600,
+  "h": 1184,
+  "ko": 48
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-11.webp",
+  "alt": "GPO, empêcher la modification du proxy",
+  "w": 1600,
+  "h": 1479,
+  "ko": 215
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-12.webp",
+  "alt": "gpresult sur WKS-01",
+  "w": 1600,
+  "h": 1479,
+  "ko": 85
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-13.webp",
+  "alt": "gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée",
+  "w": 1571,
+  "h": 1310,
+  "ko": 92
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-14.webp",
+  "alt": "netsh winhttp show proxy sur WKS-01",
+  "w": 934,
+  "h": 294,
+  "ko": 9
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-15.webp",
+  "alt": "gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement",
+  "w": 1600,
+  "h": 1355,
+  "ko": 103
+ },
+ {
+  "src": "assets/img/projets/mini-si/mini-si-16.webp",
+  "alt": "Zabbix, page Hosts le 08/10 avant correction : SRV-DC01, SRV-LNX01 et Zabbix server, avec les problèmes ouverts",
+  "w": 941,
+  "h": 460,
+  "ko": 14
+ }
+]

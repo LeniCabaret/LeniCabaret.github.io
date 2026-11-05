@@ -1,0 +1,480 @@
+/* ==========================================================================
+   PORTFOLIO DE LÉNI — BTS SIO
+   Feuille de styles des 17 thèmes officiels portés de « Superviseur JER »
+   Fichier complet, encodage UTF-8, fins de ligne LF.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Variables du thème par défaut (Sombre sans attribut)
+   -------------------------------------------------------------------------- */
+:root {
+  --bg: #14171B;
+  --surface: #1C2026;
+  --surface-2: #252B33;
+  --border: #2A2F36;
+  --text: #F5F4F1;
+  --muted: #A7AEB6;
+  --accent: #4FB3C9;
+  --accent-end: #4FB3C9;
+  --on-accent: #0B1E24;
+  --success: #5FB37E;
+  --warning: #D9A441;
+  --danger: #E06A62;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   1. Thème Sombre
+   -------------------------------------------------------------------------- */
+html[data-theme="sombre"] {
+  --bg: #14171B;
+  --surface: #1C2026;
+  --surface-2: #252B33;
+  --border: #2A2F36;
+  --text: #F5F4F1;
+  --muted: #A7AEB6;
+  --accent: #4FB3C9;
+  --accent-end: #4FB3C9;
+  --on-accent: #0B1E24;
+  --success: #5FB37E;
+  --warning: #D9A441;
+  --danger: #E06A62;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   2. Thème Clair
+   -------------------------------------------------------------------------- */
+html[data-theme="clair"] {
+  --bg: #F3F2EF;
+  --surface: #FFFFFF;
+  --surface-2: #E8E7E3;
+  --border: #D5D9DE;
+  --text: #14171B;
+  --muted: #56606B;
+  --accent: #0F6E80;
+  --accent-end: #0F6E80;
+  --on-accent: #FFFFFF;
+  --success: #2E7D4F;
+  --warning: #986300;
+  --danger: #B3261E;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------
+   3. Thème Contraste élevé
+   -------------------------------------------------------------------------- */
+html[data-theme="contraste-eleve"] {
+  --bg: #000000;
+  --surface: #0A0A0A;
+  --surface-2: #1A1A1A;
+  --border: #FFFFFF;
+  --text: #FFFFFF;
+  --muted: #E6E6E6;
+  --accent: #FFD400;
+  --accent-end: #FFD400;
+  --on-accent: #000000;
+  --success: #00E676;
+  --warning: #FFB000;
+  --danger: #FF5C5C;
+  --font-mono: Consolas, 'Courier New', monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   4. Thème Acrylique
+   -------------------------------------------------------------------------- */
+html[data-theme="acrylique"] {
+  --bg: #1E2433;
+  --surface: #262D3F;
+  --surface-2: #30394F;
+  --border: #3A4358;
+  --text: #EEF2FA;
+  --muted: #A9B4C9;
+  --accent: #7AA2F7;
+  --accent-end: #7AA2F7;
+  --on-accent: #10172A;
+  --success: #9ECE6A;
+  --warning: #E0AF68;
+  --danger: #F7768E;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   5. Thème Tons de gris
+   -------------------------------------------------------------------------- */
+html[data-theme="tons-de-gris"] {
+  --bg: #1A1A1A;
+  --surface: #242424;
+  --surface-2: #2E2E2E;
+  --border: #3A3A3A;
+  --text: #F2F2F2;
+  --muted: #A6A6A6;
+  --accent: #D6D6D6;
+  --accent-end: #D6D6D6;
+  --on-accent: #1A1A1A;
+  --success: #7FB58A;
+  --warning: #C8A04A;
+  --danger: #D86E6E;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   6. Thème Néon arcade
+   -------------------------------------------------------------------------- */
+html[data-theme="neon-arcade"] {
+  --bg: #0D0A14;
+  --surface: #140F1F;
+  --surface-2: #1E162E;
+  --border: #2E2346;
+  --text: #F5F0FF;
+  --muted: #B3A7CF;
+  --accent: #FF3DAA;
+  --accent-end: #00E5FF;
+  --on-accent: #1A0011;
+  --success: #2EF2C0;
+  --warning: #FFD23F;
+  --danger: #FF6B6B;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   7. Thème Terminal rétro
+   -------------------------------------------------------------------------- */
+html[data-theme="terminal-retro"] {
+  --bg: #030803;
+  --surface: #071207;
+  --surface-2: #0C1E0C;
+  --border: #164016;
+  --text: #B8FFB8;
+  --muted: #6FCF6F;
+  --accent: #39FF14;
+  --accent-end: #39FF14;
+  --on-accent: #021002;
+  --success: #39FF14;
+  --warning: #FFD000;
+  --danger: #FF5555;
+  --font-mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   8. Thème Aurore
+   -------------------------------------------------------------------------- */
+html[data-theme="aurore"] {
+  --bg: #0B1220;
+  --surface: #111A2C;
+  --surface-2: #19253E;
+  --border: #24324A;
+  --text: #EAF2FF;
+  --muted: #A3B4CC;
+  --accent: #5EEAD4;
+  --accent-end: #A78BFA;
+  --on-accent: #042F2A;
+  --success: #7EE787;
+  --warning: #F5C451;
+  --danger: #F7768E;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   9. Thème Carbone
+   -------------------------------------------------------------------------- */
+html[data-theme="carbone"] {
+  --bg: #111214;
+  --surface: #18191C;
+  --surface-2: #222428;
+  --border: #2C2E33;
+  --text: #F2F2F2;
+  --muted: #A9ACB2;
+  --accent: #FF4D4D;
+  --accent-end: #FF8F5C;
+  --on-accent: #2A0000;
+  --success: #4ADE80;
+  --warning: #FFB020;
+  --danger: #FF8F5C;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   10. Thème Papier
+   -------------------------------------------------------------------------- */
+html[data-theme="papier"] {
+  --bg: #F4EEE2;
+  --surface: #FBF7EF;
+  --surface-2: #EFE8DA;
+  --border: #DCD2BF;
+  --text: #1F2A44;
+  --muted: #5A6378;
+  --accent: #2F5DA8;
+  --accent-end: #2F5DA8;
+  --on-accent: #FFFFFF;
+  --success: #2A7249;
+  --warning: #8A5A00;
+  --danger: #B3261E;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------
+   11. Thème Synthwave
+   -------------------------------------------------------------------------- */
+html[data-theme="synthwave"] {
+  --bg: #140B24;
+  --surface: #1C1030;
+  --surface-2: #281745;
+  --border: #3A2458;
+  --text: #FBF3FF;
+  --muted: #C3A9DD;
+  --accent: #FF71CE;
+  --accent-end: #B967FF;
+  --on-accent: #1A0012;
+  --success: #05FFA1;
+  --warning: #FFC857;
+  --danger: #FF6B81;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   12. Thème Bretagne
+   -------------------------------------------------------------------------- */
+html[data-theme="bretagne"] {
+  --bg: #15171C;
+  --surface: #1C1F26;
+  --surface-2: #262A34;
+  --border: #363A45;
+  --text: #F4F1EA;
+  --muted: #B8B4AA;
+  --accent: #F2C14E;
+  --accent-end: #FFF4D6;
+  --on-accent: #2A1E00;
+  --success: #6FD08C;
+  --warning: #FFB86B;
+  --danger: #FF6B6B;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   13. Thème Console de poche
+   -------------------------------------------------------------------------- */
+html[data-theme="console-de-poche"] {
+  --bg: #C4CFA1;
+  --surface: #D6DEB5;
+  --surface-2: #B5C190;
+  --border: #8B9A5E;
+  --text: #0F2A10;
+  --muted: #2F4A22;
+  --accent: #1E4D1F;
+  --accent-end: #1E4D1F;
+  --on-accent: #E6EEC8;
+  --success: #1E5E20;
+  --warning: #5E4100;
+  --danger: #8E1B1B;
+  --font-mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------
+   14. Thème Volcan
+   -------------------------------------------------------------------------- */
+html[data-theme="volcan"] {
+  --bg: #140C0A;
+  --surface: #1E1310;
+  --surface-2: #2B1B17;
+  --border: #3E2620;
+  --text: #FFF1EA;
+  --muted: #CFAE9F;
+  --accent: #FF6A2B;
+  --accent-end: #FFC14D;
+  --on-accent: #1F0700;
+  --success: #8BE38B;
+  --warning: #FFC14D;
+  --danger: #FF6B8B;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   15. Thème Abysses
+   -------------------------------------------------------------------------- */
+html[data-theme="abysses"] {
+  --bg: #050E1A;
+  --surface: #0A1626;
+  --surface-2: #102138;
+  --border: #18304A;
+  --text: #E6F6FF;
+  --muted: #8FB3CC;
+  --accent: #22E5D0;
+  --accent-end: #7C5CFF;
+  --on-accent: #002620;
+  --success: #7CF29A;
+  --warning: #FFD166;
+  --danger: #FF7B9C;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   16. Thème Halloween
+   -------------------------------------------------------------------------- */
+html[data-theme="halloween"] {
+  --bg: #120D1A;
+  --surface: #1D1429;
+  --surface-2: #2A1D3B;
+  --border: #332247;
+  --text: #F6F2FA;
+  --muted: #B5A8C7;
+  --accent: #FF7700;
+  --accent-end: #7C3AED;
+  --on-accent: #1A0900;
+  --success: #39FF14;
+  --warning: #FFBA42;
+  --danger: #FF5C5C;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   17. Thème Noël
+   -------------------------------------------------------------------------- */
+html[data-theme="noel"] {
+  --bg: #0A170E;
+  --surface: #13261A;
+  --surface-2: #1C3625;
+  --border: #254230;
+  --text: #F5FAF6;
+  --muted: #A2BFAC;
+  --accent: #FF4D4D;
+  --accent-end: #FFD700;
+  --on-accent: #1A0000;
+  --success: #FFD700;
+  --warning: #FFC107;
+  --danger: #FF5C5C;
+  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   Règles de curseurs personnalisés
+   -------------------------------------------------------------------------- */
+html {
+  cursor: var(--cur-fleche, auto);
+}
+
+a,
+button,
+[role="button"],
+label,
+select,
+summary {
+  cursor: var(--cur-main, pointer);
+}
+
+input,
+textarea {
+  cursor: var(--cur-texte, text);
+}
+
+/* --------------------------------------------------------------------------
+   Canvas de fond plein écran
+   -------------------------------------------------------------------------- */
+#fond-theme {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Styles du sélecteur de thème (.theme-picker)
+   -------------------------------------------------------------------------- */
+.theme-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.theme-picker button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  border: 2px solid var(--border);
+  background: var(--btn-bg, #14171B);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Pastille centrale affichant l'accent du thème */
+.theme-picker button::after {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--btn-accent, #4FB3C9);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transition: transform 0.16s ease;
+}
+
+.theme-picker button:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+}
+
+.theme-picker button:hover::after {
+  transform: scale(1.15);
+}
+
+/* État actif sélectionné (aria-pressed="true") */
+.theme-picker button[aria-pressed="true"] {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-color: var(--accent);
+  transform: scale(1.12);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Navigation au clavier nette */
+.theme-picker button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibilité : réduction des mouvements
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

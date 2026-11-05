@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini-SI Albatros · Léni Cabaret</title>
+  <meta name="description" content="Projet Mini-SI Albatros : Active Directory, GPO proxy, Docker (GLPI, Squid, Zabbix, Grafana/Loki), PRA et sauvegarde restic. Réalisé seul par Léni Cabaret.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/themes.css">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a href="#contenu" class="skip-link">Aller au contenu</a>
+
+  <!-- Barre du haut -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <span class="host-badge">LC-01 · projet Albatros</span>
+        <span class="live-status">
+          <span class="voyant voyant-green" aria-hidden="true"></span>
+          <span>dernier relevé il y a <span data-live-seconds>0</span> s</span>
+        </span>
+        <div class="theme-controls">
+          <div class="theme-picker" data-theme-picker aria-label="Choix du thème"></div>
+          <span data-theme-name></span>
+        </div>
+      </div>
+      <nav class="topbar-nav" aria-label="Navigation principale">
+        <a href="index.html" class="nav-btn">Accueil</a>
+        <a href="index.html#alternance" class="nav-btn">Alternance</a>
+        <a href="index.html#projets" class="nav-btn">Projets</a>
+        <a href="e5.html" class="nav-btn">Tableau E5</a>
+        <a href="mini-si-albatros.html" class="nav-btn active">Mini-SI Albatros</a>
+        <a href="index.html#competences" class="nav-btn">Compétences</a>
+        <a href="index.html#parcours" class="nav-btn">Parcours</a>
+        <a href="index.html#veille" class="nav-btn">Veille</a>
+        <a href="index.html#contact" class="nav-btn">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu" class="dashboard-container">
+    <!-- En-tête du projet Mini-SI Albatros -->
+    <section class="panel project-page-header" aria-labelledby="albatros-title">
+      <div class="hero-header">
+        <div class="hero-identity">
+          <div class="project-meta-bar">
+            <span class="badge-outline">Projet réalisé seul</span>
+            <span>Date : 08/10/2026</span>
+            <span>Période (E5) : du 01/09/26 au 09/10/26</span>
+          </div>
+          <h1 id="albatros-title">Mini-SI Albatros</h1>
+          <p class="subtitle">Infrastructure complète pour PME fictive (50 postes) sur VMware Workstation</p>
+        </div>
+        <div class="btn-group">
+          <a href="e5.html" class="btn btn-secondary">&larr; Retour au tableau E5</a>
+          <a href="index.html" class="btn btn-secondary">Accueil</a>
+        </div>
+      </div>
+
+      <!-- Contexte et objectifs -->
+      <div style="border-top: 1px solid var(--border); padding-top: 14px">
+        <h2 style="font-size: 16px; margin: 0 0 8px; color: var(--accent)">Contexte et objectifs</h2>
+        <p style="margin: 0 0 10px; color: var(--text)">
+          Équipe IT d'une PME fictive, ALBATROS (50 postes). Mini-SI monté sur VMware Workstation : Active Directory avec GPO proxy, helpdesk GLPI branché à l'AD, supervision Zabbix, logs Loki/Grafana, sauvegarde restic vers MinIO avec restauration de GLPI testée.
+        </p>
+        <p style="margin: 0; font-size: 14px; color: var(--muted)">
+          <strong>Compétences visées :</strong> B1.1 (patrimoine, sauvegarde, PRA), B1.2 (incidents et demandes), B1.3 (portail interne), B1.4 (mode projet), B1.5 (déploiement et tests), B1.6 (documentation et veille).
+        </p>
+      </div>
+    </section>
+
+    <!-- Tuiles métriques clés (RTO, Restauration, RPO) -->
+    <section class="stats-grid" aria-label="Métriques clés du PRA et de l'architecture">
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">RTO Mesuré</span>
+          <span class="voyant voyant-green" aria-hidden="true"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number">41<span class="stat-unit">s</span></div>
+        </div>
+        <p class="stat-desc">Objectif : RTO &le; 30 min (Validé)</p>
+      </article>
+
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Restauration testée</span>
+          <span class="voyant voyant-green" aria-hidden="true"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number">19<span class="stat-unit">s</span></div>
+        </div>
+        <p class="stat-desc">17 048 fichiers restaurés (GLPI, 447 tables)</p>
+      </article>
+
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">RPO Cible</span>
+          <span class="voyant voyant-blue" aria-hidden="true"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number">&le; 24<span class="stat-unit">h</span></div>
+        </div>
+        <p class="stat-desc">Rétention restic : 7 jours et 4 semaines</p>
+      </article>
+
+      <article class="stat-tile">
+        <div class="stat-top">
+          <span class="stat-label">Environnement</span>
+          <span class="voyant voyant-green" aria-hidden="true"></span>
+        </div>
+        <div class="stat-main">
+          <div class="stat-number">3<span class="stat-unit">VM</span></div>
+        </div>
+        <p class="stat-desc">VMware Workstation · NAT VMnet8</p>
+      </article>
+    </section>
+
+    <!-- 1. Architecture -->
+    <section class="panel project-section" aria-labelledby="arch-title">
+      <h2 id="arch-title">Architecture (réseau NAT VMnet8, 192.168.205.0/24)</h2>
+      <div class="table-responsive">
+        <table class="arch-table">
+          <thead>
+            <tr>
+              <th scope="col">Machine virtuelle</th>
+              <th scope="col">Rôle</th>
+              <th scope="col">Adresse IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>SRV-DC01</strong></td>
+              <td>AD DS, DNS, GPO (albatros.local)</td>
+              <td>192.168.205.2</td>
+            </tr>
+            <tr>
+              <td><strong>SRV-LNX01</strong></td>
+              <td>Hôte Docker (tous les services)</td>
+              <td>192.168.205.3</td>
+            </tr>
+            <tr>
+              <td><strong>WKS-01</strong></td>
+              <td>Poste client Windows, membre du domaine</td>
+              <td>DHCP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 10px">
+        <h3 style="font-size: 16px; margin: 0 0 8px; color: var(--text)">Conteneurs (un docker-compose par brique dans ~/stacks, mémoire limitée par conteneur) :</h3>
+        <div class="table-responsive">
+          <table class="arch-table">
+            <thead>
+              <tr>
+                <th scope="col">Service / Conteneur</th>
+                <th scope="col">Ports d'écoute</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Squid (reverse-proxy)</td>
+                <td>3128</td>
+              </tr>
+              <tr>
+                <td>GLPI + MariaDB</td>
+                <td>8080</td>
+              </tr>
+              <tr>
+                <td>Zabbix 7 : serveur, web, PostgreSQL 16, agent</td>
+                <td>10051, 8081</td>
+              </tr>
+              <tr>
+                <td>Grafana, Loki, Promtail</td>
+                <td>3000, 3100</td>
+              </tr>
+              <tr>
+                <td>MinIO (stockage S3 des sauvegardes)</td>
+                <td>9000, 9001</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Captures Architecture -->
+      <h3 style="font-size: 15px; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase">Captures de l'architecture</h3>
+      <div class="captures-gallery-grid">
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-01.webp" data-gallery-alt="Schéma logique du réseau Albatros" data-gallery-caption="Schéma logique du réseau Albatros" aria-haspopup="dialog" aria-label="Agrandir : Schéma logique du réseau Albatros">
+            <img src="assets/img/projets/mini-si/mini-si-01.webp" alt="Schéma logique du réseau Albatros" width="1600" height="1743" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">Schéma logique du réseau Albatros</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-02.webp" data-gallery-alt="ipconfig -all sur SRV-DC01" data-gallery-caption="ipconfig -all sur SRV-DC01" aria-haspopup="dialog" aria-label="Agrandir : ipconfig -all sur SRV-DC01">
+            <img src="assets/img/projets/mini-si/mini-si-02.webp" alt="ipconfig -all sur SRV-DC01" width="1600" height="1465" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">ipconfig -all sur SRV-DC01</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-03.webp" data-gallery-alt="docker ps sur SRV-LNX01" data-gallery-caption="docker ps sur SRV-LNX01" aria-haspopup="dialog" aria-label="Agrandir : docker ps sur SRV-LNX01">
+            <img src="assets/img/projets/mini-si/mini-si-03.webp" alt="docker ps sur SRV-LNX01" width="1422" height="974" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">docker ps sur SRV-LNX01</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 2. Active Directory et GPO proxy -->
+    <section class="panel project-section" aria-labelledby="ad-title">
+      <h2 id="ad-title">Active Directory et GPO proxy</h2>
+      <p style="margin: 0; color: var(--text)">
+        Domaine albatros.local opérationnel (dcdiag sans erreur). OU ALBATROS : utilisateurs Ibra, Pao, Sam ; groupe GG-IT.
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        GPO-Proxy-Standard, liée à l'OU Ordinateurs : proxy IE10 192.168.205.3:3128, page d'accueil http://192.168.205.3:8080, script de démarrage netsh-proxy.bat (netsh winhttp set proxy), stratégie « Empêcher la modification des paramètres de proxy ».
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        Alignement du 08/10 : la GPO pointait sur .20 alors que Squid répond sur .3 ; corrigée puis vérifiée sur WKS-01 (gpupdate /force, netsh winhttp show proxy, gpresult /r).
+      </p>
+
+      <!-- Captures AD et GPO -->
+      <h3 style="font-size: 15px; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase">Captures Active Directory &amp; Stratégies de groupe (GPO)</h3>
+      <div class="captures-gallery-grid">
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-04.webp" data-gallery-alt="Utilisateurs de l'OU ALBATROS" data-gallery-caption="Utilisateurs de l'OU ALBATROS" aria-haspopup="dialog" aria-label="Agrandir : Utilisateurs de l'OU ALBATROS">
+            <img src="assets/img/projets/mini-si/mini-si-04.webp" alt="Utilisateurs de l'OU ALBATROS" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">Utilisateurs de l'OU ALBATROS</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-05.webp" data-gallery-alt="Groupe GG-IT" data-gallery-caption="Groupe GG-IT" aria-haspopup="dialog" aria-label="Agrandir : Groupe GG-IT">
+            <img src="assets/img/projets/mini-si/mini-si-05.webp" alt="Groupe GG-IT" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">Groupe GG-IT</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-06.webp" data-gallery-alt="dcdiag sur SRV-DC01" data-gallery-caption="dcdiag sur SRV-DC01" aria-haspopup="dialog" aria-label="Agrandir : dcdiag sur SRV-DC01">
+            <img src="assets/img/projets/mini-si/mini-si-06.webp" alt="dcdiag sur SRV-DC01" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">dcdiag sur SRV-DC01</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-07.webp" data-gallery-alt="GPO, paramètres proxy IE10 alignés sur 192.168.205.3" data-gallery-caption="GPO, paramètres proxy IE10 alignés sur 192.168.205.3" aria-haspopup="dialog" aria-label="Agrandir : GPO, paramètres proxy IE10 alignés sur 192.168.205.3">
+            <img src="assets/img/projets/mini-si/mini-si-07.webp" alt="GPO, paramètres proxy IE10 alignés sur 192.168.205.3" width="1414" height="1044" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">GPO, paramètres proxy IE10 alignés sur 192.168.205.3</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-08.webp" data-gallery-alt="GPO, page d'accueil IE10 alignée sur 192.168.205.3" data-gallery-caption="GPO, page d'accueil IE10 alignée sur 192.168.205.3" aria-haspopup="dialog" aria-label="Agrandir : GPO, page d'accueil IE10 alignée sur 192.168.205.3">
+            <img src="assets/img/projets/mini-si/mini-si-08.webp" alt="GPO, page d'accueil IE10 alignée sur 192.168.205.3" width="1088" height="1006" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">GPO, page d'accueil IE10 alignée sur 192.168.205.3</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-09.webp" data-gallery-alt="GPO, script de démarrage" data-gallery-caption="GPO, script de démarrage" aria-haspopup="dialog" aria-label="Agrandir : GPO, script de démarrage">
+            <img src="assets/img/projets/mini-si/mini-si-09.webp" alt="GPO, script de démarrage" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">GPO, script de démarrage</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-10.webp" data-gallery-alt="netsh-proxy.bat aligné sur 192.168.205.3" data-gallery-caption="netsh-proxy.bat aligné sur 192.168.205.3" aria-haspopup="dialog" aria-label="Agrandir : netsh-proxy.bat aligné sur 192.168.205.3">
+            <img src="assets/img/projets/mini-si/mini-si-10.webp" alt="netsh-proxy.bat aligné sur 192.168.205.3" width="1600" height="1184" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">netsh-proxy.bat aligné sur 192.168.205.3</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-11.webp" data-gallery-alt="GPO, empêcher la modification du proxy" data-gallery-caption="GPO, empêcher la modification du proxy" aria-haspopup="dialog" aria-label="Agrandir : GPO, empêcher la modification du proxy">
+            <img src="assets/img/projets/mini-si/mini-si-11.webp" alt="GPO, empêcher la modification du proxy" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">GPO, empêcher la modification du proxy</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-12.webp" data-gallery-alt="gpresult sur WKS-01" data-gallery-caption="gpresult sur WKS-01" aria-haspopup="dialog" aria-label="Agrandir : gpresult sur WKS-01">
+            <img src="assets/img/projets/mini-si/mini-si-12.webp" alt="gpresult sur WKS-01" width="1600" height="1479" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">gpresult sur WKS-01</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-13.webp" data-gallery-alt="gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée" data-gallery-caption="gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée" aria-haspopup="dialog" aria-label="Agrandir : gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée">
+            <img src="assets/img/projets/mini-si/mini-si-13.webp" alt="gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée" width="1571" height="1310" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">gpresult -r sur WKS-01 le 08/10, GPO-Proxy-Standard appliquée</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-14.webp" data-gallery-alt="netsh winhttp show proxy sur WKS-01" data-gallery-caption="netsh winhttp show proxy sur WKS-01" aria-haspopup="dialog" aria-label="Agrandir : netsh winhttp show proxy sur WKS-01">
+            <img src="assets/img/projets/mini-si/mini-si-14.webp" alt="netsh winhttp show proxy sur WKS-01" width="934" height="294" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">netsh winhttp show proxy sur WKS-01</figcaption>
+        </figure>
+
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-15.webp" data-gallery-alt="gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement" data-gallery-caption="gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement" aria-haspopup="dialog" aria-label="Agrandir : gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement">
+            <img src="assets/img/projets/mini-si/mini-si-15.webp" alt="gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement" width="1600" height="1355" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">gpupdate -force, netsh winhttp show proxy et gpresult -r après alignement</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 3. Supervision et logs -->
+    <section class="panel project-section" aria-labelledby="supervision-title">
+      <h2 id="supervision-title">Supervision et logs</h2>
+      <p style="margin: 0; color: var(--text)">
+        Zabbix : trois causes trouvées à l'agent indisponible (interfaces en 127.0.0.1, agent qui n'autorisait que 127.0.0.1, nom d'hôte en minuscules) ; corrigées, Zabbix Agent 2 installé sur SRV-DC01 : hôtes disponibles.
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        Grafana : deux dashboards, « Santé SI Albatros » (volume de logs, trafic proxy, erreurs 5xx, accès refusés) et « Logs Conteneurs et Proxy ».
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        Incident Loki « 429 too many outstanding requests » résolu (file de requêtes, découpage, mémoire de Grafana relevée).
+      </p>
+
+      <!-- Capture Supervision Zabbix -->
+      <h3 style="font-size: 15px; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase">Capture Supervision Zabbix</h3>
+      <div class="captures-gallery-grid">
+        <figure class="capture-card">
+          <button type="button" class="capture-btn" data-gallery-src="assets/img/projets/mini-si/mini-si-16.webp" data-gallery-alt="Zabbix, page Hosts le 08/10 avant correction : SRV-DC01, SRV-LNX01 et Zabbix server, avec les problèmes ouverts" data-gallery-caption="Zabbix, page Hosts le 08/10 avant correction : SRV-DC01, SRV-LNX01 et Zabbix server, avec les problèmes ouverts" aria-haspopup="dialog" aria-label="Agrandir : Zabbix, page Hosts le 08/10 avant correction">
+            <img src="assets/img/projets/mini-si/mini-si-16.webp" alt="Zabbix, page Hosts le 08/10 avant correction : SRV-DC01, SRV-LNX01 et Zabbix server, avec les problèmes ouverts" width="941" height="460" loading="lazy" decoding="async">
+            <span class="capture-zoom-overlay" aria-hidden="true">Agrandir</span>
+          </button>
+          <figcaption class="capture-caption">Zabbix, page Hosts le 08/10 avant correction : SRV-DC01, SRV-LNX01 et Zabbix server, avec les problèmes ouverts</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 4. Sauvegarde et PRA -->
+    <section class="panel project-section" aria-labelledby="pra-title">
+      <h2 id="pra-title">Sauvegarde et PRA</h2>
+      <p style="margin: 0; color: var(--text)">
+        restic sauvegarde les volumes GLPI et Zabbix vers le bucket MinIO « backups » (rétention 7 jours et 4 semaines, dépôt chiffré).
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        Restauration testée : 17 048 fichiers en 19 s ; test complet du 08/10 avec GLPI installé (447 tables).
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        Objectifs RPO &le; 24 h, RTO &le; 30 min ; RTO mesuré : 41 s.
+      </p>
+      <p style="margin: 0; color: var(--text)">
+        GLPI relié à l'AD en LDAPS (port 636, compte de service en lecture seule), comptes Ibra, Pao et Sam importés, catégories et SLA « prise en charge sous 4 h ».
+      </p>
+    </section>
+
+    <!-- 5. Incidents traités -->
+    <section class="panel project-section" aria-labelledby="incidents-title">
+      <h2 id="incidents-title">Incidents traités</h2>
+      <div class="incident-card">
+        <h3>1. GLPI inaccessible (conteneur arrêté)</h3>
+        <p>Diagnostic, redémarrage, rédaction du runbook « GLPI indisponible ».</p>
+      </div>
+      <div class="incident-card">
+        <h3>2. Base GLPI détruite</h3>
+        <p>Restauration complète via restic, redémarrage propre de la stack de conteneurs.</p>
+      </div>
+      <div class="incident-card">
+        <h3>3. Panne du proxy Squid</h3>
+        <p>Détection dans les flux de logs Loki/Grafana, relance du service, vérification des accès depuis WKS-01.</p>
+      </div>
+    </section>
+
+    <!-- 6. Retour d'expérience -->
+    <section class="panel project-section" aria-labelledby="retex-title">
+      <h2 id="retex-title">Retour d'expérience</h2>
+      <div class="host-specs-grid" style="margin: 0">
+        <div class="spec-item">
+          <span class="spec-key" style="color: var(--success)">À garder</span>
+          <span class="spec-val">Un compose par brique applicative, limites strictes de mémoire par conteneur, sauvegardes restic automatisées vers MinIO.</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-key" style="color: var(--warning)">À améliorer</span>
+          <span class="spec-val">Documenter précisément la tâche planifiée de 02h30, aligner les IP sur le plan d'adressage, ne plus stocker de mot de passe en clair dans les scripts.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Visionneuse <dialog> accessible (identique et synchronisée avec le script site.js) -->
+  <dialog id="image-viewer" class="image-viewer" aria-label="Visionneuse de captures d'écran">
+    <div class="viewer-inner">
+      <div class="viewer-header">
+        <span id="viewer-counter" class="viewer-counter">1 / 16</span>
+        <button type="button" class="viewer-close-btn" data-viewer-close aria-label="Fermer la visionneuse (Échap)">
+          <span>Fermer</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="18" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="viewer-stage">
+        <button type="button" class="viewer-nav-btn" data-viewer-prev aria-label="Image précédente (Flèche gauche)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="viewer-image-wrap">
+          <img id="viewer-img" src="assets/img/projets/mini-si/mini-si-01.webp" alt="Agrandissement de capture">
+          <p id="viewer-caption" class="viewer-caption-text"></p>
+        </div>
+        <button type="button" class="viewer-nav-btn" data-viewer-next aria-label="Image suivante (Flèche droite)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="site-footer">
+    <span>Portfolio de Léni Cabaret · BTS SIO SISR (AFTEC Rennes)</span>
+    <span>Hébergé sur GitHub Pages · Sans traceur</span>
+  </footer>
+
+  <script src="assets/js/themes.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
+</body>
+</html>
